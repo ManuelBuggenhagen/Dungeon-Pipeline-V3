@@ -33,6 +33,7 @@ import core.components.VelocityComponent;
 import core.level.loader.DungeonLoader;
 import core.network.server.DialogTracker;
 import core.systems.PositionSystem;
+import core.utils.JsonHandler;
 import core.utils.Point;
 import core.utils.Tuple;
 import core.utils.Vector2;
@@ -40,8 +41,10 @@ import core.utils.components.draw.state.StateMachine;
 import core.utils.components.path.SimpleIPath;
 import entities.HeroTankControlledFactory;
 import java.awt.Desktop;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -95,6 +98,8 @@ public class Client {
 
   /** Force to apply for movement of all entities. */
   public static Vector2 MOVEMENT_FORCE = Vector2.of(7.5, 7.5);
+  public static final String BLOCKLY_LANGUAGE_FILENAME = "currentBlocklyLanguage.json";
+  private static String blocklyLanguage;
 
   private static final boolean DEBUG_MODE = false;
   private static final boolean ACTIVATE_TANKE_CONTROLLS = DEBUG_MODE;
@@ -119,6 +124,7 @@ public class Client {
    */
   public static void main(String[] args) throws Exception {
     try {
+      readBlocklyLanguage(new File(BLOCKLY_LANGUAGE_FILENAME));
       Properties props = new Properties();
       // loads the file that sets the web mode (incase jar was created with jardesktop or jarweb)
       props.load(Client.class.getResourceAsStream("/application.properties"));
@@ -414,5 +420,36 @@ public class Client {
         e.printStackTrace();
       }
     }
+  }
+
+  private static void readBlocklyLanguage(File file) throws IOException {
+    try (InputStream fis = new FileInputStream(file)) {
+      blocklyLanguage = JsonHandler.readJson(new String(fis.readAllBytes(), StandardCharsets.UTF_8)).get("LANGUAGE").toString();
+    } catch (IOException e) {
+      blocklyLanguage = "de";
+    }
+  }
+
+  public static void writeBlocklyLanguage() {
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("LANGUAGE", blocklyLanguage);
+    String content = JsonHandler.writeJson(map, true);
+    try {
+      File file = new File(BLOCKLY_LANGUAGE_FILENAME);
+      // Ensure parent directory exists
+      try (OutputStreamWriter osw =
+             new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8)) {
+        osw.write(content);
+      }
+    } catch (Exception ignored) {
+    }
+  }
+
+  public static String getBlocklyLanguage() {
+    return blocklyLanguage;
+  }
+
+  public static void setBlocklyLanguage(String blocklyLanguage) {
+    Client.blocklyLanguage = blocklyLanguage;
   }
 }
