@@ -3,10 +3,13 @@
 ## Current Decisions
 
 - The editable authoring source is `deer.json`.
-- The visible V0 action for educators is creating a validated `deer.zip`.
+- The visible V0 action for educators is downloading a validated `deer.zip`.
 - `deer.zip` is the first shareable Wizard package.
+- Importing an existing `deer.zip` back into the Wizard is not part of V0.
 - In V0, the Java generator is started manually with `deer.zip` or the
   unpacked project folder.
+- Dungeon needs a new starter that can load a generated Wizard package or the
+  runtime package derived from it.
 - Backend, official CLI wrapper, runnable `.jar`, `.exe`, or installer are
   later iterations.
 - One-click packaging remains a later iteration.
@@ -18,7 +21,7 @@
   generator and can be overwritten by the generator.
 - Custom assets are content assets, not theme replacements.
 - The educator workflow should be simple: fill the wizard, validate the design,
-  receive/share a `deer.zip`.
+  download/share a `deer.zip`.
 - The current web wizard target is: create authoring data, validate it, package
   `deer.json` and assets into `deer.zip`.
 - Live preview is out of V0.
@@ -61,7 +64,7 @@ Web wizard
   -> validates game-breaking constraints
   -> writes referenced assets into the project folder
   -> creates deer.zip
-  -> UI shows package location
+  -> user downloads deer.zip
   -> Java generator is started manually in V0
 ```
 
@@ -78,6 +81,8 @@ deer.zip or project folder
 
 The educator should not have to manually edit or copy a JSON file. `deer.json`
 is the internal source inside the package; `deer.zip` is the shareable handoff.
+Importing an existing `deer.zip` into the Wizard can be added later, but is out
+of V0.
 
 If deterministic regeneration is needed later, the seed should be provided to
 the generator separately, for example through a CLI parameter, UI field in the
@@ -114,6 +119,18 @@ generated-room/
   validation/
     generator-report.json
 ```
+
+Dungeon-side starter requirement:
+
+```text
+Wizard package or generated-room
+  -> new Dungeon starter
+  -> load selected generated room
+```
+
+The first starter can be pragmatic. It only needs to prove that a generated room
+package can be loaded without requiring educators or students to manually place
+files in engine internals.
 
 ## File Roles
 

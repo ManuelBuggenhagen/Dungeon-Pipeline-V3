@@ -29,7 +29,8 @@ V0 konzentriert sich auf:
 - Validierung: keine Softlocks, keine unerreichbaren Rätsel, keine ungewollten
   Skips, keine fehlenden Pflichtparameter oder Assets.
 - Paket erstellen: `deer.zip` mit `deer.json` und Assets nach erfolgreicher
-  Validierung.
+  Validierung. Für V0 wird dieses Paket als Download bereitgestellt; Import
+  bestehender `deer.zip`-Pakete ist nicht Teil von V0.
 
 Nicht V0:
 
@@ -101,3 +102,8 @@ Der nächste sinnvolle Schritt ist ein UI-Prototyp, der die Schritte aus
 `deer.json` erstellt und ein validiertes `deer.zip` packt. Der Generator wird in
 V0 manuell mit diesem Paket oder Projektordner gestartet; eine komfortablere
 Integration folgt später.
+
+Für die Umsetzung bleibt `./wizard` der Projekt-Workspace. Die
+Konzeptdokumente liegen unter `./wizard/doc/v0`, damit der Root für Web-App,
+Paket-Output und spätere Generator-Anbindung frei bleibt. Zusätzlich braucht
+Dungeon einen neuen Starter, der erzeugte Wizard-Pakete laden kann.

@@ -33,9 +33,11 @@ Eine Lehrkraft möchte einen kleinen Escape Room erstellen:
 6. Sie füllt pro Baustein die benötigten Inhalte aus.
 7. Sie ergänzt Texte, Bilder, Audio und optionale Hinweise.
 8. Die UI prüft den Raum auf blockierende Fehler.
-9. Wenn keine blockierenden Fehler existieren, erstellt sie ein `deer.zip`.
+9. Wenn keine blockierenden Fehler existieren, erstellt und lädt sie ein
+   `deer.zip` herunter.
 10. Danach kann dieses Paket geteilt oder für V0 manuell an den Generator
-    übergeben werden. Bequemere One-Click-Verpackung folgt später.
+    übergeben werden. Import bestehender `deer.zip`-Pakete ist nicht Teil von
+    V0. Bequemere One-Click-Verpackung folgt später.
 
 ## Workflow-Schritte
 
@@ -340,7 +342,7 @@ Anzeigen:
 
 Hauptaktion:
 
-- `Paket erstellen`.
+- `Paket erstellen` / `deer.zip herunterladen`.
 
 Validierung:
 
@@ -404,6 +406,11 @@ Die UI darf und sollte technische Daten automatisch erzeugen:
 - Slot-Typen,
 - leere Arrays für `resources`, `hints` und `assetIds`,
 - Standardwerte für Theme und Levelanzahl.
+
+Nicht automatisch abgeleitet oder unterstützt in V0:
+
+- Import eines bestehenden `deer.zip`,
+- Wiederöffnen eines heruntergeladenen Pakets als Wizard-Entwurf.
 
 Lehrende sollen diese Werte nicht direkt bearbeiten müssen.
 

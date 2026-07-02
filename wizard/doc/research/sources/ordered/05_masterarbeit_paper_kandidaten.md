@@ -8,8 +8,8 @@ goal artifacts are not part of Wizard V0.
 
 Geprüfte lokale Quellen:
 
-- privater Literaturordner der Masterarbeit
-- privater Paper-Ordner der Masterarbeit
+- lokale Literaturauswahl der Masterarbeit
+- lokale Paper-Auswahl der Masterarbeit
 
 ## Direkt Relevante Ergänzungen Für Das Wizard-Konzept
 

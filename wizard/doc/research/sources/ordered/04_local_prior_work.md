@@ -5,8 +5,7 @@ phases. The current Wizard V0 does not generate evaluation artifacts.
 
 ## Schumann Thesis - Automated Dungeon Evaluation
 
-- Local source: Schumann master thesis PDF, available in the author's private
-  thesis archive.
+- Local source: Schumann master thesis PDF, not stored in this repository.
 - Priority: local prior work.
 - Use: Prior automated evaluation system for Dungeon, originally focused on
   Future Skills.
@@ -37,9 +36,10 @@ Relevant sections from the thesis explorer pass:
   small samples, indirect proxies, need for richer event semantics,
   debriefing/communication analysis, and clearer puzzle contexts.
 
-## Transfer to the Wizard
+## Future Transfer to the Wizard
 
-The wizard should generate a traceability and evaluation package for every room:
+For a later evaluation-focused version, the wizard could generate a traceability
+and evaluation package for every room:
 
 ```text
 learning goal
@@ -51,7 +51,7 @@ learning goal
 -> success/quality criterion
 ```
 
-Candidate package artifacts:
+Candidate future package artifacts:
 
 - `evaluation/traceability.json`
 - `evaluation/traceability.md`
@@ -61,5 +61,6 @@ Candidate package artifacts:
 - `evaluation/survey-post.json`
 - `evaluation/validation-report.md`
 
-Debriefing should not be optional decoration. Telemetry can say what happened;
-debriefing helps educators and learners explain what it meant.
+Design note for later versions: Debriefing should not be treated as optional
+decoration. Telemetry can say what happened; debriefing helps educators and
+learners explain what it meant.

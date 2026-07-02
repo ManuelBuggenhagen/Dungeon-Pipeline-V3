@@ -11,9 +11,10 @@ Generator. Der Wizard liest und schreibt diese Datei. Der Generator darf daraus
 Runtime-Dateien ableiten, aber `deer.json` bleibt das Authoring-Modell.
 
 Für Lehrende ist `deer.json` in V0 nicht das sichtbare Endprodukt. Die
-sichtbare Abschlussaktion ist `Paket erstellen`; danach liegt ein `deer.zip`
-mit `deer.json` und referenzierten Assets vor. Der Java-Generator wird in V0
-noch manuell mit diesem Paket oder dem entpackten Projektordner gestartet.
+sichtbare Abschlussaktion ist `Paket erstellen`; danach wird ein `deer.zip`
+mit `deer.json` und referenzierten Assets heruntergeladen. Der Java-Generator
+wird in V0 noch manuell mit diesem Paket oder dem entpackten Projektordner
+gestartet.
 
 V0 beschreibt:
 
@@ -688,9 +689,10 @@ Generator-Parameter oder in einer separaten Run-Datei stehen, nicht im
 Authoring-Modell.
 
 Die sichtbare Bedienung in V0 bleibt: Die UI prüft den Entwurf, erzeugt intern
-eine valide `deer.json` und packt daraus mit den Assets ein `deer.zip`. Der
-Generator wird für V0 manuell mit diesem Paket oder dem Projektordner
-gestartet.
+eine valide `deer.json` und packt daraus mit den Assets ein herunterladbares
+`deer.zip`. Der Generator wird für V0 manuell mit diesem Paket oder dem
+Projektordner gestartet. Import bestehender `deer.zip`-Pakete ist nicht Teil von
+V0.
 
 ## 13. Harte Validierungen
 
@@ -794,3 +796,4 @@ Diese Punkte müssen nicht vor dem UI-Prototyp entschieden werden:
 3. Wie `choice`, `item_use`, `assembly` und `state_change` intern in Dungeon-
    Systeme übersetzt werden.
 4. Welches Verpackungsformat der Generator für die One-Click-Nutzung erzeugt.
+5. Wie der neue Dungeon-Starter ein erzeugtes Wizard-Paket lädt.

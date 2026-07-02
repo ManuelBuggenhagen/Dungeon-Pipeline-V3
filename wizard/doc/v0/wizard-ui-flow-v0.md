@@ -22,7 +22,7 @@ Rahmen festlegen
 -> Rätselbausteine und daraus entstehende Oberflächen planen
 -> Rätselablauf konfigurieren
 -> Inhalte, Assets und Hinweise ergänzen
--> Validieren und deer.zip erstellen
+-> Validieren und deer.zip herunterladen
 ```
 
 ## UI-Grundsätze
@@ -90,7 +90,7 @@ Aktionen:
 
 - weiter zum nächsten offenen Schritt
 - Entwurf speichern
-- Paket erstellen, wenn alles gültig ist
+- Paket erstellen und `deer.zip` herunterladen, wenn alles gültig ist
 
 ## 2. Rahmen
 
@@ -440,9 +440,14 @@ Warnungen:
 
 Hauptaktion:
 
-- `Paket erstellen`
+- `Paket erstellen` / `deer.zip herunterladen`
 
 Der Button ist deaktiviert, solange blockierende Fehler existieren.
+
+Nicht V0:
+
+- Import eines bestehenden `deer.zip`,
+- Wiederöffnen eines heruntergeladenen Pakets als Wizard-Entwurf.
 
 ## Lehrenden-Sicht Auf The Last Hour V0
 

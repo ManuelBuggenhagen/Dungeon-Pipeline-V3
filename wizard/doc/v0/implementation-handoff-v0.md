@@ -25,7 +25,7 @@ Lehrender öffnet Wizard-Web-App
 -> füllt Rahmen, Szenario, Rätsel, Inhalte und Hinweise aus
 -> Wizard erzeugt intern deer.json
 -> Wizard validiert blockierende Fehler
--> Lehrender erstellt ein deer.zip
+-> Lehrender erstellt/downloadet ein deer.zip
 -> deer.zip enthält deer.json und referenzierte Assets
 -> Java-Generator wird für V0 manuell mit diesem Paket/Projekt gestartet
 -> Generator validiert erneut und erzeugt das Dungeon-/Room-Paket
@@ -76,6 +76,26 @@ Wichtige Contract-Regeln:
   Rätsels vorkommen.
 - `successEffect` beschreibt intern, welcher kontrollierte Effekt nach einem
   gelösten Rätsel passiert. Freitext-Effekte sind nicht erlaubt.
+- `deer.zip` wird in V0 als Download/teilbares Paket erstellt. Import
+  bestehender `deer.zip`-Pakete ist nicht Teil von V0.
+
+## Workspace-Struktur
+
+Für die Umsetzung ist `./wizard` der aktive Workspace. Die Konzeptdateien
+liegen unter `./wizard/doc`, damit der Root des Wizard-Workspaces frei für
+Web-App-Code, Paket-Ausgaben und spätere Generator-Anbindung bleibt.
+
+Empfohlene V0-Struktur:
+
+```text
+wizard/
+  doc/
+    README.md
+    v0/
+    research/
+  webapp/
+  packages/
+```
 
 ## Empfohlener Erster Foundation-Slice
 
@@ -127,8 +147,8 @@ produktiven Paket-Flow muss aber zwischen "sichtbar im Konzept" und
 V0-Regel:
 
 ```text
-Ein Entwurf darf nur als generator-faehiges Paket erstellt werden, wenn alle
-verwendeten Bausteine im aktuellen Generator-Slice unterstuetzt sind.
+Ein Entwurf darf nur als generator-fähiges Paket erstellt werden, wenn alle
+verwendeten Bausteine im aktuellen Generator-Slice unterstützt sind.
 ```
 
 Noch nicht generator-fähige Bausteine dürfen im UI-Prototyp sichtbar sein,
@@ -154,6 +174,7 @@ Funktional muss die UI:
 - blockierende Fehler vor `deer.zip erstellen` anzeigen,
 - Warnungen anzeigen, aber nicht blockieren,
 - `deer.zip` für Teilen und manuellen Generatorlauf erstellen,
+- `deer.zip` als Download bereitstellen,
 - Speicherort und nächste manuelle Aktion anzeigen.
 
 UI darf frei entscheiden:
@@ -209,10 +230,13 @@ V0-Entscheidung:
 
 - Der Wizard startet den Java-Generator noch nicht automatisch.
 - Der Wizard erzeugt `deer.zip` als teilbares Authoring-/Content-Paket.
+- Import bestehender `deer.zip`-Pakete ist nicht Teil von V0.
 - Der Generator wird für V0 manuell mit diesem Paket oder dem entpackten
   Projektordner aufgerufen.
 - Ein lokaler Backend-Service, offizieller CLI-Wrapper oder Desktop-Start ist
   eine nächste Iteration.
+- Zusätzlich braucht Dungeon einen neuen Starter, der ein erzeugtes `deer.zip`
+  bzw. ein daraus abgeleitetes Room-Paket laden kann.
 
 Vorschlag für die nächste Iteration:
 
@@ -319,8 +343,9 @@ V0 braucht ein teilbares Paket nach der Wizard-Validierung.
 Pragmatischer Startpunkt:
 
 - Erstes Wizard-Artefakt: `deer.zip`.
-- `deer.zip` enthält `deer.json` und Assets und kann geteilt oder vom
-  Generator manuell konsumiert werden.
+- `deer.zip` enthält `deer.json` und Assets, wird als Download erzeugt und kann
+  geteilt oder vom Generator manuell konsumiert werden.
+- Bestehende `deer.zip`-Pakete wieder zu importieren ist kein V0-Ziel.
 - Der Generator-Output muss so gekapselt sein, dass später ohne Schema-Bruch
   ein startbarer Ordner, eine runnable `.jar` oder eine `.exe` als weiterer
   Packaging-Target ergänzt werden kann.
@@ -362,9 +387,9 @@ Defaults als V0-Arbeitsannahme verwenden.
      klare Markierung mit Begründung.
 
 5. Wie wird ein Wizard-Entwurf gespeichert und wieder geöffnet?
-   - Default: lokaler Projektordner mit `deer.json` und Asset-Unterordner.
-     Lehrende bearbeiten nicht direkt JSON, aber die App kann den Entwurf wieder
-     laden.
+   - V0-Entscheidung: `deer.zip` wird erstellt/downloadet. Import bestehender
+     `deer.zip`-Pakete ist nicht Teil von V0. Lokal entsteht ein Projektordner
+     im Wizard-Workspace, aber die sichtbare Übergabe ist der Download.
 
 6. Wie sieht das Generator-Fehlerformat aus?
    - Default: strukturierte Fehler mit `severity`, `code`, `message`, `path`
