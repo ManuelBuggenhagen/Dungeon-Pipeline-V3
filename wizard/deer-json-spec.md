@@ -1,14 +1,19 @@
 # deer.json Spezifikation
 
-Status: vierter Diskussionsdraft  
-Stand: 29.06.2026  
+Status: 0.1-draft Diskussionsstand
+Stand: 02.07.2026
 Scope: V0, ein spielbarer Escape-Room-Level, ein Standard-Theme
 
 ## 1. Rolle Von deer.json
 
-`deer.json` ist die editierbare Quelle des Wizards. Der Wizard liest und
-schreibt diese Datei. Der Generator darf daraus Runtime-Dateien ableiten, aber
-`deer.json` bleibt das Authoring-Modell.
+`deer.json` ist die interne editierbare Quelle des Wizards und der Contract zum
+Generator. Der Wizard liest und schreibt diese Datei. Der Generator darf daraus
+Runtime-Dateien ableiten, aber `deer.json` bleibt das Authoring-Modell.
+
+Für Lehrende ist `deer.json` in V0 nicht das sichtbare Endprodukt. Die
+sichtbare Abschlussaktion ist `Paket erstellen`; danach liegt ein `deer.zip`
+mit `deer.json` und referenzierten Assets vor. Der Java-Generator wird in V0
+noch manuell mit diesem Paket oder dem entpackten Projektordner gestartet.
 
 V0 beschreibt:
 
@@ -16,16 +21,16 @@ V0 beschreibt:
 Raum-Metadaten
 -> Spielsitzung
 -> Standard-Szenario
--> Raetselgraph
--> Raetsel mit Parametern
+-> Oberflächen
+-> Rätselgraph
+-> Rätsel mit Parametern
 -> Assets
--> Generator-Constraints
 ```
 
-Ein erster Vorschlag fuer die typ-spezifischen Pflichtparameter steht in
+Ein erster Vorschlag für die typ-spezifischen Pflichtparameter steht in
 [`parameter-table-v0.md`](parameter-table-v0.md).
 
-Der UI-orientierte Wizard-Ablauf und die von Lehrenden auszufuellenden Felder
+Der UI-orientierte Wizard-Ablauf und die von Lehrenden auszufüllenden Felder
 stehen in [`wizard-ui-flow-v0.md`](wizard-ui-flow-v0.md).
 
 Explizit nicht V0:
@@ -37,7 +42,8 @@ Explizit nicht V0:
 - automatisch generierte Pre-/Post-Tests,
 - mehrere Themes,
 - Custom-Themes, Tilesets, Sprites oder UI-Skins,
-- binaere Assets direkt in JSON,
+- binäre Assets direkt in JSON,
+- Generator-Laufparameter wie Seed, Layout-Profil oder technische Constraints,
 - generierte `.level`-Dateien.
 
 ## 2. Top-Level Struktur
@@ -46,14 +52,14 @@ V0-Draft:
 
 ```json
 {
-  "formatVersion": "0.4.0-draft",
+  "formatVersion": "0.1-draft",
   "metadata": {},
   "session": {},
   "scenario": {},
+  "surfaces": [],
   "riddleGraph": {},
   "riddles": [],
-  "assets": [],
-  "generation": {}
+  "assets": []
 }
 ```
 
@@ -63,12 +69,12 @@ Pflichtfelder:
 |---|---|
 | `formatVersion` | Version des Authoring-Formats. |
 | `metadata` | Titel, ID, Sprache, Autor, Kurzbeschreibung. |
-| `session` | Zielgruppe, Spieleranzahl, Dauer, Kollaborationsmodus. |
-| `scenario` | Standard-Theme, Story-Rahmen, Intro/Outro, Timer. |
-| `riddleGraph` | Progression und Abhaengigkeiten. |
-| `riddles` | Konkrete Raetseldefinitionen. |
+| `session` | Zielgruppe, Spieleranzahl und Zeitlimit. |
+| `scenario` | Standard-Theme, Story-Rahmen und Intro/Outro. |
+| `surfaces` | Vom Wizard abgeleitete Interaktionsorte wie Computer, Keypad oder Tür. |
+| `riddleGraph` | Progression und Abhängigkeiten. |
+| `riddles` | Konkrete Rätseldefinitionen. |
 | `assets` | Referenzen auf Paket-Assets. |
-| `generation` | Seed und technische Generator-Grenzen. |
 
 ## 3. ID-Konventionen
 
@@ -90,8 +96,8 @@ Beispiele:
 
 Validierung:
 
-- IDs muessen innerhalb ihres Bereichs eindeutig sein.
-- Referenzen muessen auf existierende IDs zeigen.
+- IDs müssen innerhalb ihres Bereichs eindeutig sein.
+- Referenzen müssen auf existierende IDs zeigen.
 - IDs sollten nicht automatisch aus Titeln neu erzeugt werden, sobald andere
   Elemente darauf verweisen.
 
@@ -104,11 +110,8 @@ Beschreibt das Authoring-Artefakt.
   "id": "wizard_example_v0",
   "title": "Wizard Beispielraum V0",
   "locale": "de-DE",
-  "description": "Beispielkonfiguration mit den aktuell verfuegbaren V0-Bausteinen.",
-  "author": {
-    "name": "Beispiel Lehrkraft",
-    "organization": "FH Beispiel"
-  }
+  "description": "Beispielkonfiguration mit den aktuell verfügbaren V0-Bausteinen.",
+  "author": "Beispiel Lehrkraft"
 }
 ```
 
@@ -117,6 +120,16 @@ Pflicht in V0:
 - `id`
 - `title`
 - `locale`
+
+Optional in V0:
+
+- `description`
+- `author` als einfacher String
+
+V0-Default:
+
+- `locale` ist standardmäßig `de-DE`. Mehrsprachigkeit kann später folgen,
+  ohne das Feld neu einzuführen.
 
 ## 5. session
 
@@ -128,34 +141,39 @@ Beschreibt Unterrichts- und Spielsitzung, aber ohne Lernzielmodell.
   "priorKnowledge": "Grundlagen zu E-Mail, Webseiten und einfachen Codierungen.",
   "playerCount": {
     "min": 1,
-    "max": 4,
-    "recommended": 2
+    "max": 4
   },
-  "durationMinutes": 60,
-  "timeLimitMinutes": 60,
-  "collaborationMode": "cooperative"
+  "time": {
+    "limitMinutes": 60,
+    "limitMode": "hard"
+  }
 }
 ```
 
-V0-Werte fuer `collaborationMode`:
+V0-Regeln:
 
-- `single_player`
-- `cooperative`
+- `playerCount` beschreibt nur den erlaubten Bereich.
+- Es gibt kein `recommended`, weil diese Empfehlung im Wizard abgeleitet werden
+  kann und keine harte Eigenschaft des Raums ist.
+- Der Raum ist immer kooperativ. Deshalb gibt es kein `collaborationMode`.
+- `time.limitMode=hard`: Nach Ablauf endet der Raum.
+- `time.limitMode=soft`: Nach Ablauf läuft der Raum weiter, aber Hinweise oder
+  Unterstützung dürfen stärker werden.
 
 ## 6. scenario
 
 V0 nutzt genau ein Standard-Theme. Das Feld `themeId` bleibt trotzdem im JSON,
-damit spaetere Versionen erweiterbar sind. In V0 sollte der Wizard dieses Feld
-nicht als grosse Theme-Auswahl verkaufen.
+damit spätere Versionen erweiterbar sind. In V0 sollte der Wizard dieses Feld
+nicht als große Theme-Auswahl verkaufen.
 
 ```json
 {
   "themeId": "default",
   "playerRole": "Untersuchungsteam",
   "premise": "Ein Labor ist verriegelt. Die Gruppe muss Hinweise rekonstruieren und einen Ausgang freischalten.",
-  "mission": "Findet den finalen Zugangscode und oeffnet die Ausgangstuer.",
+  "mission": "Findet den finalen Zugangscode und öffnet die Ausgangstür.",
   "introText": "Der Alarm ist aktiv. Auf dem Wandtimer laufen 60 Minuten herunter.",
-  "successText": "Die Ausgangstuer oeffnet sich.",
+  "successText": "Die Ausgangstür öffnet sich.",
   "failureText": "Die Zeit ist abgelaufen."
 }
 ```
@@ -164,14 +182,66 @@ V0-Regeln:
 
 - `themeId` ist vorerst immer `default`.
 - Es gibt kein Vorlagenfeld in V0. The Last Hour liefert Bausteine, aber keine
-  vorausgewaehlte Raumstruktur.
-- Custom Assets duerfen Inhalte ergaenzen, aber das Theme nicht ersetzen.
+  vorausgewählte Raumstruktur.
+- Custom Assets dürfen Inhalte ergänzen, aber das Theme nicht ersetzen.
 - Storytexte sollten kurz bleiben.
 
-## 7. riddleGraph
+## 7. surfaces
 
-Der Raetselgraph beschreibt Progression, nicht Raumgeometrie. Er ist die
-Authoring-Sicht auf Abhaengigkeiten. Der Generator kann daraus spaeter
+`surfaces` ist ein internes Register der Interaktionsorte im Raum. Lehrende
+sollen diese Liste nicht technisch pflegen. Die UI leitet sie aus den gewählten
+Bausteinen ab und erlaubt nur fachliche Benennung, z. B. "Labor-PC",
+"Storage-Keypad" oder "Ausgangstür".
+
+```json
+[
+  {
+    "id": "s_main_computer",
+    "kind": "computer",
+    "title": "Labor-PC"
+  },
+  {
+    "id": "s_storage_keypad",
+    "kind": "keypad",
+    "title": "Storage-Keypad"
+  }
+]
+```
+
+V0-Werte für `kind`:
+
+- `world`
+- `world_object`
+- `computer`
+- `keypad`
+- `door`
+- `container`
+- `inventory`
+- `control_panel`
+- `assembly_area`
+
+Warum ein eigenes Register:
+
+- Rätselparameter können mit `surfaceId` auf eine konkrete Oberfläche zeigen.
+- Hints mit `surface_visited` können gegen existierende Oberflächen validiert
+  werden.
+- Mehrere Computer, Keypads oder Türen bleiben später möglich, ohne den
+  Contract neu zu bauen.
+
+V0-Regeln:
+
+- Mindestens eine Surface existiert, z. B. `s_world`.
+- `surfaceId`-Referenzen müssen auf existierende Einträge in `surfaces`
+  zeigen.
+- Lehrende sehen fachliche Namen, nicht technische Slot-IDs.
+- Für den ersten Generator-Slice darf die Runtime diese Oberflächen stark
+  vereinfachen, z. B. auf eine Level-/World-Surface reduzieren oder pro
+  PC-nahem Baustein einen einfachen Computer erzeugen.
+
+## 8. riddleGraph
+
+Der Rätselgraph beschreibt Progression, nicht Raumgeometrie. Er ist die
+Authoring-Sicht auf Abhängigkeiten. Der Generator kann daraus später
 Petri-Net-Strukturen, Trigger oder Runtime-States ableiten.
 
 ```json
@@ -205,45 +275,45 @@ Petri-Net-Strukturen, Trigger oder Runtime-States ableiten.
 }
 ```
 
-Node-Arten fuer V0:
+Node-Arten für V0:
 
 - `start`
 - `riddle`
 - `event`
 - `end`
 
-Edge-Conditions fuer V0:
+Edge-Conditions für V0:
 
 - `always`
 - `all_of_tokens`
 - `any_of_tokens`
 
-Tokens sind fuer V0 bewusst Teil des Formats. Sie sind fuer Lehrende im UI
-versteckbar, aber fuer Generator, Validierung und Petri-Net-Ableitung nuetzlich.
+Tokens sind für V0 bewusst Teil des Formats. Sie sind für Lehrende im UI
+versteckbar, aber für Generator, Validierung und Petri-Net-Ableitung nützlich.
 
 Validierung:
 
 - Genau ein `startNodeId`.
 - Mindestens ein `endNodeId`.
-- Alle Raetsel-Nodes referenzieren ein existierendes `riddleId`.
+- Alle Rätsel-Nodes referenzieren ein existierendes `riddleId`.
 - Jeder Endknoten muss vom Start erreichbar sein.
-- Tokens in Edge-Conditions muessen von vorher erreichbaren Raetseln erzeugt
-  werden koennen.
-- Standard ist ein azyklischer Graph. Retry-Verhalten gehoert in das jeweilige
-  Raetsel, nicht als Graphzyklus.
-- V0 erzeugt keine optionalen Raetsel: Jeder Raetselknoten muss erreichbar sein
+- Tokens in Edge-Conditions müssen von vorher erreichbaren Rätseln erzeugt
+  werden können.
+- Standard ist ein azyklischer Graph. Retry-Verhalten gehört in das jeweilige
+  Rätsel, nicht als Graphzyklus.
+- V0 erzeugt keine optionalen Rätsel: Jeder Rätselknoten muss erreichbar sein
   und auf einem durchspielbaren Pfad zum Ende liegen.
-- Branches duerfen nur Reihenfolge oder Parallelitaet ausdruecken, aber keine
-  optionalen Alternativpfade, die Raetsel auslassen.
-- Vor dem Ende muessen alle als `progression` modellierten Raetsel loesbar
+- Branches dürfen nur Reihenfolge oder Parallelität ausdrücken, aber keine
+  optionalen Alternativpfade, die Rätsel auslassen.
+- Vor dem Ende müssen alle als `progression` modellierten Rätsel lösbar
   geworden sein.
-- Token-Abhaengigkeiten duerfen keine Softlocks erzeugen, z. B. indem ein
-  benoetigter Token nur hinter dem eigenen Raetsel oder hinter einem
+- Token-Abhängigkeiten dürfen keine Softlocks erzeugen, z. B. indem ein
+  benötigter Token nur hinter dem eigenen Rätsel oder hinter einem
   unerreichbaren Pfad liegt.
 
-## 8. riddles
+## 9. riddles
 
-Ein Raetsel beschreibt Aufgabe, Parameter, benoetigte Tokens, produzierte Tokens,
+Ein Rätsel beschreibt Aufgabe, Parameter, benötigte Tokens, produzierte Tokens,
 optionale Ressourcen, optionale Hinweise und optionale Assets.
 
 ```json
@@ -261,49 +331,55 @@ optionale Ressourcen, optionale Hinweise und optionale Assets.
   "resources": [],
   "hints": [],
   "parameters": {
+    "surfaceId": "s_main_computer",
+    "slotType": "computer_login_slot",
     "inputMode": "credentials"
   }
 }
 ```
 
-V0-Werte fuer `designRole`:
+V0-Werte für `designRole`:
 
 - `progression`: schaltet Spielfortschritt frei.
-- `clue`: liefert einen Hinweis, Code, Gegenstand oder Kontext fuer andere
-  Raetsel.
+- `clue`: liefert einen Hinweis, Code, Gegenstand oder Kontext für andere
+  Rätsel.
 - `story`: liefert Story-Kontext.
-- `decoy`: ist absichtlich irrefuehrend oder optional.
 - `support`: hilft beim Verstehen oder Navigieren.
 
-V0-Werte fuer `difficulty`:
+V0 erzeugt keine eigenständigen Decoy-Rätsel. Irreführende Inhalte bleiben
+als `resource.purpose=decoy`, falsche Auswahloption oder falsches Item erlaubt.
+Das vermeidet optionale Progressionspfade und hält die Softlock-Prüfung
+einfacher.
+
+V0-Werte für `difficulty`:
 
 - `easy`
 - `medium`
 - `hard`
 
-## 9. Allgemeine V0-Raetseltypen
+## 10. Allgemeine V0-Rätseltypen
 
-Die erste Iteration nutzt moeglichst allgemeine Kategorien. Fachliche Bedeutung
+Die erste Iteration nutzt möglichst allgemeine Kategorien. Fachliche Bedeutung
 liegt in Titel, Text, Assets und Parametern, nicht im Typnamen.
 
 | Typ | Bedeutung | The-Last-Hour-Beispiel |
 |---|---|---|
 | `collection` | Hinweis, Item oder Reward in Welt, Container oder Minigame finden. | Schreibtisch-Notiz, Papierkorb-Hinweis, USB-Fund. |
-| `input` | Eine oder mehrere Eingaben gegen definierte Loesungen pruefen. Deckt Codes, Passwoerter, Login und Decoding ab. | PC-Login, Keypad, Binary/ASCII-Code, Morse-Code. |
-| `choice` | Eine oder mehrere Optionen auswaehlen, bewerten oder zuordnen. | Vertrauenswuerdige E-Mail/URL erkennen. |
+| `input` | Eine oder mehrere Eingaben gegen definierte Lösungen prüfen. Deckt Codes, Passwörter, Login und Decoding ab. | PC-Login, Keypad, Binary/ASCII-Code, Morse-Code. |
+| `choice` | Eine oder mehrere Optionen auswählen, bewerten oder zuordnen. | Vertrauenswürdige E-Mail/URL erkennen. |
 | `item_use` | Bestimmtes Inventar-Item an einem Ziel verwenden. | Richtigen USB-Stick in PC stecken. |
 | `assembly` | Fragmente, Schritte oder Teile zusammensetzen oder ordnen. | Final-Code-Bildfragmente zusammensetzen. |
-| `state_change` | Einfache Weltinteraktion ohne Loesungseingabe, die einen Zustand aendert. | Versteckten Stromschalter aktivieren. |
-| `control_panel` | Wiederverwendbare UI mit mehreren Controls, z. B. Buttons, Toggles, Textfeldern. | Licht, Tueren, AC, Vent-Verbindung. |
+| `state_change` | Einfache Weltinteraktion ohne Lösungseingabe, die einen Zustand ändert. | Versteckten Stromschalter aktivieren. |
+| `control_panel` | Wiederverwendbare UI mit mehreren Controls, z. B. Buttons, Toggles, Textfeldern. | Licht, Türen, AC, Vent-Verbindung. |
 
 `state_change` bleibt trotz weniger aktueller Beispiele als eigene Kategorie.
-Der Grund ist die klare technische Grenze: Ein `input` prueft eine vom Spieler
-eingegebene Loesung. Ein `state_change` ist eine direkte Weltaktion, deren
-Interaktion selbst das Ereignis ist. Das deckt spaeter Schalter, Hebel,
+Der Grund ist die klare technische Grenze: Ein `input` prüft eine vom Spieler
+eingegebene Lösung. Ein `state_change` ist eine direkte Weltaktion, deren
+Interaktion selbst das Ereignis ist. Das deckt später Schalter, Hebel,
 Druckplatten, Stromkreise, bewegliche Objekte oder einfache Trigger ab, ohne sie
-kuenstlich als Code-/Text-Eingabe zu modellieren.
+künstlich als Code-/Text-Eingabe zu modellieren.
 
-### 9.1 Warum Diese Zusammenfassung?
+### 10.1 Warum Diese Zusammenfassung?
 
 Die vorherigen Typen waren zu nah an The Last Hour:
 
@@ -318,25 +394,25 @@ item_gate -> item_use
 ```
 
 `control_panel` bleibt bewusst separat. Es ist nicht nur eine einzelne Eingabe,
-sondern eine zusammengesetzte Interaktionsoberflaeche mit mehreren Controls und
-Weltzustandsaenderungen. Das ist wiederverwendbar genug, um einen eigenen Typ zu
+sondern eine zusammengesetzte Interaktionsoberfläche mit mehreren Controls und
+Weltzustandsänderungen. Das ist wiederverwendbar genug, um einen eigenen Typ zu
 rechtfertigen.
 
-`inspect_content` wird nicht mehr als eigener Raetseltyp gefuehrt. Solche
-Inhalte sind Ressourcen eines Raetsels, weil sie meistens ein anderes Raetsel
-vorbereiten oder stuetzen.
+`inspect_content` wird nicht mehr als eigener Rätseltyp geführt. Solche
+Inhalte sind Ressourcen eines Rätsels, weil sie meistens ein anderes Rätsel
+vorbereiten oder stützen.
 
-Alle Raetsel enthalten immer ein `resources`-Array. Wenn ein Raetsel keine
-Ressourcen hat, ist es ein leeres Array. Dadurch bleibt die Struktur fuer Wizard,
-Generator und spaetere Validierung stabil.
+Alle Rätsel enthalten immer ein `resources`-Array. Wenn ein Rätsel keine
+Ressourcen hat, ist es ein leeres Array. Dadurch bleibt die Struktur für Wizard,
+Generator und spätere Validierung stabil.
 
-### 9.2 input
+### 10.2 input
 
-`input` bleibt breit, muss aber ueber `parameters.inputMode` eingegrenzt werden.
+`input` bleibt breit, muss aber über `parameters.inputMode` eingegrenzt werden.
 Dadurch bleibt die Kategorie allgemein, ohne dass Keypads, Login-Dialoge und
 Decoding-Felder unklar werden.
 
-V0-Werte fuer `inputMode`:
+V0-Werte für `inputMode`:
 
 - `numeric`: Zahlenfeld, z. B. Keypad. Erwartet `answer`, `maxLength`.
 - `text`: kurzes Textfeld. Erwartet `answer`, optional `maxLength`.
@@ -353,17 +429,20 @@ Beispiel Keypad:
     "inputMode": "numeric",
     "answer": "3758",
     "maxLength": 4,
-    "successAction": "open_door_storage"
+    "successEffect": {
+      "type": "open_surface",
+      "surfaceId": "s_storage_door"
+    }
   }
 }
 ```
 
-### 9.3 choice
+### 10.3 choice
 
 `choice` deckt einfache Multiple-Choice-, Mehrfachauswahl- und
 Zuordnungsaufgaben ab.
 
-V0-Werte fuer `selectionMode`:
+V0-Werte für `selectionMode`:
 
 - `single_correct`
 - `multiple_correct`
@@ -371,14 +450,14 @@ V0-Werte fuer `selectionMode`:
 
 Beispiele:
 
-- eine sichere E-Mail aus mehreren E-Mails auswaehlen,
-- mehrere passende Gegenstaende markieren,
+- eine sichere E-Mail aus mehreren E-Mails auswählen,
+- mehrere passende Gegenstände markieren,
 - Begriffe Kategorien zuordnen.
 
-### 9.4 resources
+### 10.4 resources
 
 `resources` sind Informationen, die im Raum, in Dialogen, in Dateien oder als
-Asset bereits Teil des Raetseldesigns sind. Sie sind keine Hilfen im Sinne des
+Asset bereits Teil des Rätseldesigns sind. Sie sind keine Hilfen im Sinne des
 Hint-Systems. Eine Ressource kann ein notwendiger Hinweis, Kontext, Decoy oder
 eine Anleitung sein.
 
@@ -393,39 +472,39 @@ eine Anleitung sein.
 }
 ```
 
-V0-Werte fuer `kind`:
+V0-Werte für `kind`:
 
 - `inline_text`
 - `asset`
 - `world_object`
 - `computer_file`
 
-V0-Werte fuer `availability`:
+V0-Werte für `availability`:
 
 - `visible_in_level`
 - `inside_container`
 - `after_token`
 - `generated_by_riddle`
 
-V0-Werte fuer `purpose`:
+V0-Werte für `purpose`:
 
 - `clue`
 - `context`
 - `instruction`
 - `decoy`
 
-Ressourcen erzeugen keine Tokens. Graph-Tokens entstehen nur ueber
+Ressourcen erzeugen keine Tokens. Graph-Tokens entstehen nur über
 `riddle.producesTokens`. Wenn das Lesen oder Finden einer Information
-Spielfortschritt erzeugen soll, wird diese Aktion als Raetsel modelliert,
+Spielfortschritt erzeugen soll, wird diese Aktion als Rätsel modelliert,
 meistens als `collection`, `input`, `choice`, `state_change` oder
 `control_panel`.
 
-### 9.5 control_panel
+### 10.5 control_panel
 
-`control_panel` ist ein eigener Raetseltyp fuer zusammengesetzte UI-Interaktion.
-Ein Panel kann mehrere Controls enthalten. Diese Controls koennen interne
-Panel-Zustaende setzen, erzeugen aber keine Graph-Tokens. Graph-Tokens stehen
-weiterhin nur auf Raetsel-Ebene in `producesTokens`.
+`control_panel` ist ein eigener Rätseltyp für zusammengesetzte UI-Interaktion.
+Ein Panel kann mehrere Controls enthalten. Diese Controls können interne
+Panel-Zustände setzen, erzeugen aber keine Graph-Tokens. Graph-Tokens stehen
+weiterhin nur auf Rätsel-Ebene in `producesTokens`.
 
 V0-Control-Arten:
 
@@ -460,31 +539,91 @@ Beispiel:
 }
 ```
 
-### 9.6 hints
+### 10.6 hints
 
-Hints sind in V0 optional und werden erst als Unterstuetzung angezeigt, z. B.
-manuell, nach Fehlversuchen oder nach Zeit. Ein Hint ist nicht die normale
-Informationsquelle des Raetsels.
+Hints sind in V0 optional. Ein Hint ist nicht die normale Informationsquelle des
+Rätsels, sondern zusätzliche Unterstützung.
+
+Ohne `unlock` ist ein Hint sofort verfügbar. Mit `unlock` kann der Wizard
+beschreiben, dass ein Hint erst nach bestimmten Bedingungen freigeschaltet wird.
+Der Generator kann diese Bedingungen später auf Petri-Net-Places/Tokens oder
+andere Runtime-Ereignisse abbilden.
 
 ```json
 {
   "id": "h_pc_login_1",
   "title": "Zwei Notizen",
   "text": "Die Zugangsdaten stehen nicht an einer einzigen Stelle.",
-  "level": 1,
-  "trigger": "manual_request"
+  "severity": 1,
+  "unlock": {
+    "operator": "any_of",
+    "conditions": [
+      {
+        "type": "failed_attempts",
+        "riddleId": "r_pc_login",
+        "count": 2
+      },
+      {
+        "type": "elapsed_time",
+        "seconds": 300
+      }
+    ]
+  }
 }
 ```
 
-V0-Werte fuer `trigger`:
+V0-Werte für `unlock.operator`:
 
-- `manual_request`
-- `after_failed_attempts`
-- `after_time`
+- `all_of`
+- `any_of`
 
-## 10. assets
+V0-Werte für `unlock.conditions[].type`:
 
-Assets werden nicht binaer in `deer.json` gespeichert. `deer.json` referenziert
+- `elapsed_time`: nach einer Zeitangabe, Pflichtfeld `seconds`.
+- `failed_attempts`: nach Fehlversuchen in einem Rätsel, Pflichtfelder
+  `riddleId` und `count`.
+- `resource_viewed`: nachdem eine Ressource/Information gelesen wurde,
+  Pflichtfeld `resourceId`.
+- `surface_visited`: nachdem eine Oberfläche/Ort besucht wurde, Pflichtfeld
+  `surfaceId`.
+- `riddle_completed`: nachdem ein Rätsel abgeschlossen wurde, Pflichtfeld
+  `riddleId`.
+- `token_available`: technische/interne Bedingung für Generator/Runtime,
+  Pflichtfeld `token`; sollte in der UI nicht als primärer Begriff erscheinen.
+
+### 10.7 successEffect
+
+`successEffect` beschreibt, was im Raum passiert, wenn ein Rätsel erfolgreich
+gelöst wurde. Lehrende sollen diesen Begriff nicht sehen. Die UI zeigt fachlich
+z. B. "Storage-Tür öffnen"; intern speichert der Wizard einen kontrollierten
+Effekt.
+
+V0-Empfehlung:
+
+```json
+{
+  "type": "open_surface",
+  "surfaceId": "s_storage_door"
+}
+```
+
+Erste Action-Kategorien:
+
+- `set_state`
+- `grant_resources`
+- `grant_items`
+- `unlock_surface`
+- `open_surface`
+- `mount_item`
+- `spawn_content`
+- `reveal_resource`
+
+`successEffect` ist kein Freitext. Der `type` muss aus einer kontrollierten
+Liste kommen und die referenzierten IDs müssen existieren.
+
+## 11. assets
+
+Assets werden nicht binär in `deer.json` gespeichert. `deer.json` referenziert
 Dateien innerhalb des Pakets.
 
 ```json
@@ -502,7 +641,7 @@ Dateien innerhalb des Pakets.
 }
 ```
 
-V0-Werte fuer `purpose`:
+V0-Werte für `purpose`:
 
 - `riddle_evidence`
 - `lore`
@@ -522,121 +661,114 @@ V0-Medien:
 Validierung:
 
 - `path` muss relativ zum Paket sein.
-- Pfade duerfen nicht aus dem Paket herauszeigen.
-- Required Assets muessen im Paket existieren.
-- PDFs und Office-Dateien sind in V0 nicht direkt runtime-faehig.
+- Pfade dürfen nicht aus dem Paket herauszeigen.
+- Required Assets müssen im Paket existieren.
+- PDFs und Office-Dateien sind in V0 nicht direkt runtime-fähig.
 
-## 11. generation
+## 12. Generator-Laufparameter
 
-`generation` beschreibt reproduzierbare Generator-Entscheidungen.
+`deer.json` beschreibt, was der Escape Room sein soll. Sie beschreibt nicht, wie
+ein bestimmter Generatorlauf technisch ausgeführt wird.
 
-```json
-{
-  "seed": 7341,
-  "levelCount": 1,
-  "layoutProfile": "default_lab",
-  "targetRuntime": "dungeon_escape_room",
-  "constraints": {
-    "allowBranches": true,
-    "allowOptionalRiddles": false,
-    "maxRiddles": 12,
-    "usePredefinedThemeOnly": true
-  }
-}
-```
+Deshalb gibt es in V0 kein `generation`-Objekt in `deer.json`.
 
-V0:
+Nicht Teil von `deer.json`:
 
-- `levelCount` muss `1` sein.
-- `usePredefinedThemeOnly` muss `true` sein.
-- `allowOptionalRiddles` muss `false` sein.
-- Der gleiche Seed plus gleiche `deer.json` soll das gleiche Paket erzeugen.
-- Ein anderer Seed darf das Layout veraendern, aber nicht Raetsel, Loesungen,
-  Graph-Abhaengigkeiten oder Durchspielbarkeit.
+- Seed,
+- Layout-Profil,
+- Ziel-Runtime,
+- maximale Rätselanzahl,
+- Theme-Constraint,
+- Branch-/Optionalitäts-Flags,
+- Levelanzahl.
 
-Die sichtbare Bedienung im ersten Wizard-Prototyp bleibt bewusst kleiner: Die
-UI prueft den Entwurf und exportiert eine valide `deer.json`. Der spaetere
-Generator konsumiert diese Datei und erzeugt daraus Runtime-Dateien oder ein
-Paket.
+Diese Regeln liegen im Wizard, im Schema oder im späteren Generator. Wenn der
+Generator später reproduzierbare Läufe braucht, sollte der Seed als separater
+Generator-Parameter oder in einer separaten Run-Datei stehen, nicht im
+Authoring-Modell.
 
-Eine spielbare Preview und erneute Generatorlaeufe mit anderem Seed sind
-nachgelagerte Generator-/Runtime-Funktionen.
+Die sichtbare Bedienung in V0 bleibt: Die UI prüft den Entwurf, erzeugt intern
+eine valide `deer.json` und packt daraus mit den Assets ein `deer.zip`. Der
+Generator wird für V0 manuell mit diesem Paket oder dem Projektordner
+gestartet.
 
-## 12. Harte Validierungen
+## 13. Harte Validierungen
 
-Der Wizard darf `deer.json` nicht exportieren, wenn dadurch ein game-breaking
-Raum entstehen wuerde. Der spaetere Generator muss dieselben harten Regeln
-erneut pruefen. Blockierend sind besonders Softlocks, unerreichbare Progression,
-ungewollte Skips und fehlende Pflichtdaten.
+Der Wizard darf kein `deer.zip` erstellen, wenn dadurch ein game-breaking Raum
+beschrieben würde. Der Generator muss dieselben harten Regeln beim manuellen
+Start erneut prüfen. Blockierend sind besonders Softlocks, unerreichbare
+Progression, ungewollte Skips und fehlende Pflichtdaten.
 
-Der Export wird blockiert, wenn:
+Die Paket-Erstellung wird blockiert, wenn:
 
 - `formatVersion` unbekannt ist,
 - Pflichtfelder fehlen,
 - IDs doppelt sind,
 - Referenzen ins Leere zeigen,
-- ein Raetsel einen unbekannten Typ nutzt,
-- ein Raetsel kein `resources`-Array hat,
-- ein `input` keinen passenden `inputMode` oder keine Loesungsdefinition hat,
+- `surfaceId` auf keine existierende Surface zeigt,
+- ein Rätsel einen unbekannten Typ nutzt,
+- ein Rätsel eine nicht erlaubte `designRole` nutzt,
+- ein Rätsel kein `resources`-Array hat,
+- ein `input` keinen passenden `inputMode` oder keine Lösungsdefinition hat,
 - ein `choice` keinen passenden `selectionMode` oder keine Optionen hat,
 - ein `control_panel` keine Controls hat,
 - ein Graphknoten nicht erreichbar ist,
-- ein Raetselknoten nicht auf einem durchspielbaren Pfad zum Ende liegt,
+- ein Rätselknoten nicht auf einem durchspielbaren Pfad zum Ende liegt,
 - ein Endknoten nicht erreichbar ist,
-- ein Branch ein Raetsel optional macht, obwohl `allowOptionalRiddles` false ist,
+- ein Branch ein Progressionsrätsel optional oder überspringbar macht,
 - eine Edge ein nie erzeugbares Token verlangt,
-- eine Token-Abhaengigkeit zyklisch oder in der aktuellen Graphstruktur
-  unerfuellbar ist,
-- ein `progression`-Raetsel weder Token noch explizite Weltaktion erzeugt,
+- eine Token-Abhängigkeit zyklisch oder in der aktuellen Graphstruktur
+  unerfüllbar ist,
+- ein `progression`-Rätsel weder Token noch explizite Weltaktion erzeugt,
 - ein required Asset fehlt,
-- ein Assettyp nicht unterstuetzt wird,
+- ein Assettyp nicht unterstützt wird,
 - eine `resource` ein nicht existierendes Asset referenziert,
+- eine Hint-Freischaltung eine nicht existierende Surface, Ressource oder ein
+  nicht existierendes Rätsel referenziert,
 - eine `resource` Tokens erzeugen will,
 - ein `control_panel`-Control Graph-Tokens erzeugen will,
-- `scenario.themeId` nicht `default` ist,
-- `generation.constraints.allowOptionalRiddles` nicht `false` ist,
-- `generation.levelCount` nicht `1` ist.
+- `scenario.themeId` nicht `default` ist.
 
 Der Wizard sollte diese Fehler schon im Client verhindern. Der Generator muss
-sie trotzdem erneut pruefen, weil `deer.json` importiert oder manuell editiert
-werden kann und weil Client-Fehler nicht zu kaputten Escape Rooms fuehren
-duerfen.
+sie trotzdem erneut prüfen, weil `deer.json` importiert oder manuell editiert
+werden kann und weil Client-Fehler nicht zu kaputten Escape Rooms führen
+dürfen.
 
-### 12.1 Validierungszeitpunkte
+### 13.1 Validierungszeitpunkte
 
 Die normale Nutzererfahrung soll nicht sein, dass Lehrende erst in einem
-spaeteren Generatorlauf von einem Fehler erfahren. Der Client ist deshalb die
-primaere
-Validierungsoberflaeche.
+späteren Generatorlauf von einem Fehler erfahren. Der Client ist deshalb die
+primäre
+Validierungsoberfläche.
 
-V0-Validierung laeuft in drei Stufen:
+V0-Validierung läuft in drei Stufen:
 
 1. **Step-Validierung:** Jeder Wizard-Schritt verhindert fehlende Pflichtfelder
-   und ungueltige lokale Eingaben, bevor der naechste Schritt abgeschlossen
+   und ungültige lokale Eingaben, bevor der nächste Schritt abgeschlossen
    wird.
-2. **Live-Graph-Validierung:** Der Raetselgraph prueft laufend Erreichbarkeit,
+2. **Live-Graph-Validierung:** Der Rätselgraph prüft laufend Erreichbarkeit,
    Token-Referenzen, optionale Pfade und offensichtliche Softlocks.
-3. **Export-Preflight:** Der JSON-Export ist nur aktiv, wenn Schema, Graph,
-   Pflichtparameter und Asset-Referenzen gueltig sind.
+3. **Paket-Preflight:** Der Paket-erstellen-Button ist nur aktiv, wenn Schema,
+   Graph, Pflichtparameter und Asset-Referenzen gültig sind.
 
-Der Java-Generator fuehrt dieselben harten Validierungen erneut aus. Das ist
-kein Ersatz fuer Client-Validierung, sondern ein Sicherheitsnetz fuer importierte
-oder manuell veraenderte `deer.json`-Dateien und fuer Fehler im Wizard-Client.
+Der Java-Generator führt dieselben harten Validierungen erneut aus. Das ist
+kein Ersatz für Client-Validierung, sondern ein Sicherheitsnetz für importierte
+oder manuell veränderte `deer.json`-Dateien und für Fehler im Wizard-Client.
 
-## 13. Warnungen
+## 14. Warnungen
 
 Der Wizard sollte warnen, aber nicht zwingend blockieren, wenn:
 
-- sehr lange Texte als Lore oder Raetseltext genutzt werden,
-- ein schwieriges Raetsel keine Hints hat,
-- ein Raetsel keine Tokens erzeugt und nicht als `story`, `support` oder
-  `decoy` markiert ist,
-- ein Raetsel nur dekorative Assets nutzt,
-- ein Asset nicht mit einem Raetsel oder Story-Element verknuepft ist,
-- die geschaetzte Dauer stark vom Zeitlimit abweicht,
-- sehr viele Raetsel in einer strikt linearen Kette liegen.
+- sehr lange Texte als Lore oder Rätseltext genutzt werden,
+- ein schwieriges Rätsel keine Hints hat,
+- ein Rätsel keine Tokens erzeugt und nicht als `story` oder `support`
+  markiert ist,
+- ein Rätsel nur dekorative Assets nutzt,
+- ein Asset nicht mit einem Rätsel oder Story-Element verknüpft ist,
+- die geschätzte Dauer stark vom Zeitlimit abweicht,
+- sehr viele Rätsel in einer strikt linearen Kette liegen.
 
-## 14. V0-UI-Bausteinpalette
+## 15. V0-UI-Bausteinpalette
 
 Der UI-Prototyp darf alle aktuell aus The Last Hour ableitbaren Bausteine
 anbieten:
@@ -650,16 +782,15 @@ anbieten:
 - `control_panel`
 
 Diese Liste beschreibt die Authoring-Sicht. Welche Bausteine der Java-Generator
-zuerst vollstaendig spielbar umsetzt, ist eine nachgelagerte technische
+zuerst vollständig spielbar umsetzt, ist eine nachgelagerte technische
 Planungsfrage und nicht Teil der UI-Definition.
 
-## 15. Nachgelagerte Technische Fragen
+## 16. Nachgelagerte Technische Fragen
 
-Diese Punkte muessen nicht vor dem UI-Prototyp entschieden werden:
+Diese Punkte müssen nicht vor dem UI-Prototyp entschieden werden:
 
 1. Wie stark `control_panel` in der Runtime frei konfigurierbar wird.
 2. Welche `inputMode`-Werte der Generator zuerst komplett spielbar macht.
 3. Wie `choice`, `item_use`, `assembly` und `state_change` intern in Dungeon-
-   Systeme uebersetzt werden.
-4. Wie eine spielbare Preview und ein `deer.zip`-Export technisch angebunden
-   werden.
+   Systeme übersetzt werden.
+4. Welches Verpackungsformat der Generator für die One-Click-Nutzung erzeugt.

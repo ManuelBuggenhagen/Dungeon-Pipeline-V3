@@ -7,19 +7,19 @@ Zweck: Wizard-nahe Zerlegung der wiederverwendbaren Spiel-Elemente aus
 ## Ausgangsentscheidungen
 
 - Code und Assets aus The Last Hour sollen wiederverwendet werden.
-- Das bestehende Level wird nicht uebernommen. Der Raum wird vom Generator neu
+- Das bestehende Level wird nicht übernommen. Der Raum wird vom Generator neu
   aufgebaut.
 - Ziel ist kein exakter Nachbau, sondern eine Wizard-Version der relevanten
   Interaktionen.
-- Der Wizard startet ohne vorausgewaehlte The-Last-Hour-Vorlage. The Last Hour
-  liefert in V0 nur den verfuegbaren Baustein-Katalog.
-- V0 modelliert keine eigenstaendigen Red-Herring-Raetsel. Falsche Optionen
-  duerfen aber innerhalb eines konkreten Auswahl- oder Item-Use-Raetsels
+- Der Wizard startet ohne vorausgewählte The-Last-Hour-Vorlage. The Last Hour
+  liefert in V0 nur den verfügbaren Baustein-Katalog.
+- V0 modelliert keine eigenständigen Red-Herring-Rätsel. Falsche Optionen
+  dürfen aber innerhalb eines konkreten Auswahl- oder Item-Use-Rätsels
   existieren, wenn die Mechanik das braucht.
-- Hinweise bleiben optional. Ein Raetsel hat immer ein `hints`-Array, aber es
+- Hinweise bleiben optional. Ein Rätsel hat immer ein `hints`-Array, aber es
   darf leer sein.
-- Telefon-Dialoge sind fuer V0 eher Story-Events oder Ressourcen, keine eigenen
-  Wizard-Raetsel.
+- Telefon-Dialoge sind für V0 eher Story-Events oder Ressourcen, keine eigenen
+  Wizard-Rätsel.
 - Der Computer soll langfristig als zentrale wiederverwendbare Schnittstelle
   erhalten bleiben. V0 darf aber einzelne Computer-Aufgaben als vereinfachte,
   konfigurierte Tabs oder Dialoge abbilden, statt direkt den kompletten
@@ -44,35 +44,35 @@ Zweck: Wizard-nahe Zerlegung der wiederverwendbaren Spiel-Elemente aus
 
 | Schritt | Originalelement | Spieleraktion | Wizard-Baustein | V0-Entscheidung |
 |---|---|---|---|---|
-| 1 | Stromschalter unter Papier | Schalter finden und bestaetigen | `state_change` | Beibehalten als einfache Weltinteraktion. |
+| 1 | Stromschalter unter Papier | Schalter finden und bestätigen | `state_change` | Beibehalten als einfache Weltinteraktion. |
 | 2 | Login-Notizen auf Schreibtisch und im Papierkorb | Hinweise finden/einsammeln | `collection` + `resources` | Beibehalten, aber generisch als Fund-/Resource-Mechanik. |
 | 3 | Computer-Login | E-Mail und Passwort eingeben | `input` mit `inputMode=credentials` | Beibehalten. |
 | 4 | E-Mail-Postfach und Recovery-Link | richtige Mail/URL erkennen | `choice` | Als zentrale Computer-Aufgabe behalten. V0 sollte sie in den Computer integrieren, aber nur als konfigurierten Choice-/Mail-Tab statt direkt als komplett generalisierten Mail-Client. |
-| 5 | Recovery-Webseite mit Binary/ASCII-Code | kodierten Wert entschluesseln und eingeben | `input` mit `inputMode=decoded_text` | Beibehalten; Decoder-Tabellen sind Ressourcen. |
-| 6 | Download-Dokument mit Morse-Code | Morse-Code in Zahlencode uebersetzen | `input` mit `inputMode=numeric` | Beibehalten; Dokument und Morse-Tabelle sind Ressourcen. |
+| 5 | Recovery-Webseite mit Binary/ASCII-Code | kodierten Wert entschlüsseln und eingeben | `input` mit `inputMode=decoded_text` | Beibehalten; Decoder-Tabellen sind Ressourcen. |
+| 6 | Download-Dokument mit Morse-Code | Morse-Code in Zahlencode übersetzen | `input` mit `inputMode=numeric` | Beibehalten; Dokument und Morse-Tabelle sind Ressourcen. |
 | 7 | Storage-Keypad | Zahlencode eingeben | `input` mit `inputMode=numeric` | Beibehalten, konkretes Runtime-Mapping auf Keypad. |
 | 8 | USB-Stick-Hinweis und blauer Stick | richtigen USB finden | `collection` | Mehrere USB-Sticks bleiben erhalten; der richtige Stick ist Progression, falsche Sticks sind Optionen innerhalb derselben Aufgabe. |
-| 9 | USB am PC verwenden | richtigen Gegenstand an Ziel benutzen | `item_use` | Beibehalten; falscher USB erzeugt den The-Last-Hour-Unknown-Device-Security-Zustand, faehrt den PC nach kurzer Zeit auf Login zurueck und erlaubt danach Retry. |
-| 10 | USB-Datei `control-panel.key` | Control Panel freischalten | `collection` oder `item_use`-Folge | Fuer V0 als Folge des richtigen USB-Gates modellieren. |
+| 9 | USB am PC verwenden | richtigen Gegenstand an Ziel benutzen | `item_use` | Beibehalten; falscher USB erzeugt den The-Last-Hour-Unknown-Device-Security-Zustand, fährt den PC nach kurzer Zeit auf Login zurück und erlaubt danach Retry. |
+| 10 | USB-Datei `control-panel.key` | Control Panel freischalten | `collection` oder `item_use`-Folge | Für V0 als Folge des richtigen USB-Gates modellieren. |
 | 11 | Vent-Seriennummer | Seriennummer lesen und im Panel eingeben | `control_panel` mit `text_input` | Beibehalten; Vent-Dialog ist Resource. |
 | 12 | AC einschalten | Toggle nach erfolgreicher Verbindung | `control_panel` mit `toggle` | Beibehalten; setzt Spawn/Reveal der finalen Ressource aus. |
-| 13 | Bildfragmente aus Vent | Fragmente sammeln/zusammensetzen | `assembly` | Beibehalten als Assembly: mehrere Schnipsel muessen zu einem Bild zusammengesetzt werden, das danach eine Ressource/Information offenlegt. |
-| 14 | Finale Tuer | Passwort eingeben und Tuer oeffnen | `control_panel` | Beibehalten. |
+| 13 | Bildfragmente aus Vent | Fragmente sammeln/zusammensetzen | `assembly` | Beibehalten als Assembly: mehrere Schnipsel müssen zu einem Bild zusammengesetzt werden, das danach eine Ressource/Information offenlegt. |
+| 14 | Finale Tür | Passwort eingeben und Tür öffnen | `control_panel` | Beibehalten. |
 
-## Nicht Als V0-Raetsel
+## Nicht Als V0-Rätsel
 
 | Element | Grund |
 |---|---|
-| Intro/Outro | Szenario-Text, kein Raetsel. |
+| Intro/Outro | Szenario-Text, kein Rätsel. |
 | Timer | Session-/Scenario-Konfiguration. |
-| Telefonanrufe | Story-Event/Ressource; zu speziell fuer den ersten Wizard-Baustein. |
-| Allgemeines Virus-/Falschaktion-System | Zu breit fuer V0. Die konkrete USB-Unknown-Device-Reaktion wird aber als Teil von `item_use` uebernommen. |
-| Licht, Heizung, Kamera im Control Panel | Gute UI-Demonstration, aber fuer Progression nicht notwendig. |
-| Decoy-Vents, leere Container, Fake-Dateien | Erstmal keine eigenstaendigen Red-Herrings in V0. |
+| Telefonanrufe | Story-Event/Ressource; zu speziell für den ersten Wizard-Baustein. |
+| Allgemeines Virus-/Falschaktion-System | Zu breit für V0. Die konkrete USB-Unknown-Device-Reaktion wird aber als Teil von `item_use` übernommen. |
+| Licht, Heizung, Kamera im Control Panel | Gute UI-Demonstration, aber für Progression nicht notwendig. |
+| Decoy-Vents, leere Container, Fake-Dateien | Erstmal keine eigenständigen Red-Herrings in V0. |
 
 ## Computer-Strategie
 
-Der Computer ist in The Last Hour nicht nur ein einzelnes Raetsel, sondern ein
+Der Computer ist in The Last Hour nicht nur ein einzelnes Rätsel, sondern ein
 wiederkehrender Interaktionsort: Login, E-Mails, Browser, Dateien, USB-Laufwerk
 und Control Panel laufen dort zusammen. Deshalb sollte der Wizard den Computer
 nicht als viele unverbundene Einzelobjekte behandeln.
@@ -84,8 +84,8 @@ Empfehlung:
 2. **V0-Umsetzung:** vorhandene Computer-Codebasis wiederverwenden, aber nur
    eine kleine Menge generischer Tab-/Dialogmuster parametrisieren:
    `login`, `choice`, `file/resource`, `usb_drive`, `control_panel`.
-3. **Fallback:** Wenn die Generalisierung des Computers zu gross wird, darf ein
-   einzelnes Raetsel weiterhin ueber einen normalen Dialog laufen. Das sollte
+3. **Fallback:** Wenn die Generalisierung des Computers zu groß wird, darf ein
+   einzelnes Rätsel weiterhin über einen normalen Dialog laufen. Das sollte
    aber als technische Vereinfachung gelten, nicht als langfristiges
    Autorierungsmodell.
 
@@ -93,13 +93,13 @@ Damit bleibt der Computer als zentrale Schnittstelle sichtbar, ohne dass V0
 sofort den kompletten The-Last-Hour-Computer als frei konfigurierbare Plattform
 implementieren muss.
 
-Fuer `choice.email_list` sollte der Computer bevorzugt werden. Ein einfacher
-Dialog ist nur Fallback, falls die technische Generalisierung des Tabs fuer den
-ersten Prototyp zu gross wird.
+Für `choice.email_list` sollte der Computer bevorzugt werden. Ein einfacher
+Dialog ist nur Fallback, falls die technische Generalisierung des Tabs für den
+ersten Prototyp zu groß wird.
 
 ## Collection vs. Assembly
 
-`collection` bedeutet: Der Spieler findet, sammelt oder oeffnet etwas. Die
+`collection` bedeutet: Der Spieler findet, sammelt oder öffnet etwas. Die
 eigentliche Herausforderung ist der Fundort, die Zugangsbedingung oder das
 Durchsuchen eines Containers.
 
@@ -108,9 +108,9 @@ Beispiele:
 - Login-Notiz im Schreibtisch finden.
 - Hinweis im Papierkorb-Minispiel finden.
 - richtigen USB-Stick finden.
-- Datei im Computer als Ressource oeffnen.
+- Datei im Computer als Ressource öffnen.
 
-`assembly` bedeutet: Mehrere Teile muessen aktiv zusammengesetzt, geordnet oder
+`assembly` bedeutet: Mehrere Teile müssen aktiv zusammengesetzt, geordnet oder
 kombiniert werden, damit daraus eine neue Information entsteht.
 
 Beispiele:
@@ -119,7 +119,7 @@ Beispiele:
 - mehrere Fragmente in die richtige Reihenfolge bringen.
 - aus mehreren Teilgrafiken eine lesbare Ressource erzeugen.
 
-Das finale Papierfragment-Raetsel aus The Last Hour ist deshalb `assembly`, nicht
+Das finale Papierfragment-Rätsel aus The Last Hour ist deshalb `assembly`, nicht
 `collection`: Das Ergebnis ist nicht nur ein gefundener Gegenstand, sondern ein
 zusammengesetztes Bild, das danach als Ressource den finalen Code liefert.
 
@@ -147,8 +147,8 @@ Pflicht:
 
 - `interactionKind`: z. B. `confirm`
 - `target`: logischer Zielname, z. B. `power_switch`
-- `successText`
-- `successAction`
+- `successFeedback`
+- `successEffect`
 
 Optional:
 
@@ -167,7 +167,7 @@ Pflicht:
 
 Optional:
 
-- `paperCount` fuer Trash-Minispiel
+- `paperCount` für Trash-Minispiel
 - `consumeOnCollect`
 - `repeatable`
 
@@ -176,12 +176,12 @@ Optional:
 Pflicht:
 
 - `inputMode`
-- Loesungsdefinition, abhaengig vom Modus:
+- Lösungsdefinition, abhängig vom Modus:
   - `numeric`: `answer`, `maxLength`
   - `text`: `answer`
   - `credentials`: `fields`
   - `decoded_text`: `encodedValue`, `answer`, `decoderSteps`
-- `successAction`
+- `successEffect`
 
 Optional:
 
@@ -196,7 +196,7 @@ Pflicht:
 - `selectionMode`
 - `options`
 - `correctOptionId` oder `correctOptionIds`
-- `successAction`
+- `successEffect`
 
 Optional:
 
@@ -204,8 +204,8 @@ Optional:
 - `wrongChoiceFeedback`
 - `wrongChoiceConsequence`
 
-Falsche Optionen sind erlaubt, wenn sie zur Aufgabe gehoeren. Sie sollten in V0
-aber nicht als eigene Red-Herring-Knoten im Raetselgraph stehen.
+Falsche Optionen sind erlaubt, wenn sie zur Aufgabe gehören. Sie sollten in V0
+aber nicht als eigene Red-Herring-Knoten im Rätselgraph stehen.
 
 ### `item_use`
 
@@ -213,18 +213,20 @@ Pflicht:
 
 - `requiredItemId`
 - `target`
-- `successAction`
+- `successEffect`
 
 Optional:
 
 - `consumeItem`
 - `wrongItemFeedback`
-- `wrongItemPolicy`: z. B. `ignore`, `feedback_retry`, `temporary_reset`
+- `wrongItemPolicy`: z. B. `feedback_retry`, `unknown_device_shutdown_retry`
 
-V0-Empfehlung fuer USB: `wrongItemPolicy=feedback_retry`. Ein falscher USB-Stick
-gibt Feedback oder einen PC-Fehler, verbraucht aber keinen Fortschritt und darf
-endlos erneut versucht werden. `temporary_reset` sollte nur vorsichtig genutzt
-werden, weil solche Mechaniken Softlock- und Frust-Risiken erhoehen.
+V0-Empfehlung für USB: `wrongItemPolicy=unknown_device_shutdown_retry`. Ein
+falscher USB-Stick erzeugt den bekannten Unknown-Device-/Security-Zustand, setzt
+den Computer nach kurzer Zeit auf einen retry-fähigen Zustand zurück und
+verbraucht keinen Fortschritt. Wichtig ist nicht die exakte Animation, sondern
+die Regel: falscher USB darf keinen Softlock erzeugen und muss endlos erneut
+versuchbar bleiben.
 
 ### `control_panel`
 
@@ -246,7 +248,7 @@ Optional:
 - `label`
 - `feedback`
 
-Controls erzeugen keine Graph-Tokens. Tokens entstehen nur auf Raetsel-Ebene.
+Controls erzeugen keine Graph-Tokens. Tokens entstehen nur auf Rätsel-Ebene.
 
 ### `assembly`
 
@@ -255,20 +257,19 @@ Pflicht:
 - `assemblyMode`
 - `assetId` oder `fragmentAssetIds`
 - `pieceCount`
-- `successAction`
+- `successEffect`
 
 Optional:
 
-- `seed`
 - `revealedAnswer`
 
-Das finale Bildfragment-Raetsel aus The Last Hour sollte als `assembly`
+Das finale Bildfragment-Rätsel aus The Last Hour sollte als `assembly`
 modelliert werden. Nach erfolgreicher Assembly entsteht eine Ressource, z. B. ein
-Bild oder Text, aus der die finale Loesung gelesen werden kann.
+Bild oder Text, aus der die finale Lösung gelesen werden kann.
 
 ## Slot-Anforderungen
 
-| Baustein | Benoetigte Slot-Typen |
+| Baustein | Benötigte Slot-Typen |
 |---|---|
 | `state_change` | `world_interaction_slot` |
 | `collection` | `container_slot`, `world_object_slot`, `trash_slot`, `computer_file_slot` |
@@ -279,21 +280,21 @@ Bild oder Text, aus der die finale Loesung gelesen werden kann.
 | `control_panel` | `computer_panel_slot` |
 | `assembly` | `fragment_spawn_slot` plus Ergebnis-/Anzeige-Slot |
 
-Generator-Regel: Eine Ressource, die zum Loesen eines Raetsels notwendig ist,
-muss in einem Slot liegen, der spaetestens mit den `requiresTokens` dieses
-Raetsels erreichbar ist.
+Generator-Regel: Eine Ressource, die zum Lösen eines Rätsels notwendig ist,
+muss in einem Slot liegen, der spätestens mit den `requiresTokens` dieses
+Rätsels erreichbar ist.
 
-## Naechste Klaerung
+## Nächste Klärung
 
-Aus diesem Katalog sollte als naechstes eine verbindliche Parameter-Tabelle fuer
+Aus diesem Katalog sollte als nächstes eine verbindliche Parameter-Tabelle für
 die erste Implementierung entstehen. Besonders offen ist noch, wie weit die
 Computer-Generalisierung in V0 gehen soll:
 
 - zentraler Computer mit mehreren generierten Tabs,
 - nur wiederverwendete Spezial-Tabs aus The Last Hour,
-- oder normale Dialoge als technischer Fallback fuer einzelne Raetsel.
+- oder normale Dialoge als technischer Fallback für einzelne Rätsel.
 
-Ein erster Vorschlag fuer diese Parameter-Tabelle steht in
+Ein erster Vorschlag für diese Parameter-Tabelle steht in
 [`parameter-table-v0.md`](parameter-table-v0.md).
 
 Der Wizard-Ablauf aus Lehrenden-Sicht steht in

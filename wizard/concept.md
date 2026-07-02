@@ -1,18 +1,18 @@
 # Wizard Concept V0
 
 Status: aktueller Kurzstand nach Scope-Bereinigung  
-Stand: 30.06.2026
+Stand: 02.07.2026
 
 ## Ziel
 
-Der Wizard ist eine separate, nicht-technische Authoring-Oberflaeche fuer
-Lehrende. Er fuehrt durch die Erstellung eines einfachen Educational Escape
-Rooms und exportiert als erstes Ergebnis eine valide `deer.json`.
+Der Wizard ist eine separate, nicht-technische Authoring-Oberfläche für
+Lehrende. Er führt durch die Erstellung eines einfachen Educational Escape
+Rooms und erzeugt nach erfolgreicher Validierung ein teilbares `deer.zip`.
 
 Die `deer.json` ist das Authoring-Modell:
 
 ```text
-Wizard UI -> deer.json -> spaeter: Java-Generator -> spielbares Dungeon-Paket
+Wizard UI -> interne deer.json -> deer.zip -> manueller Java-Generator -> Room-Paket
 ```
 
 ## V0-Scope
@@ -20,15 +20,16 @@ Wizard UI -> deer.json -> spaeter: Java-Generator -> spielbares Dungeon-Paket
 V0 konzentriert sich auf:
 
 - Rahmenbedingungen: Titel, Sprache, Zielgruppe, Vorwissen, Spielerzahl,
-  Dauer und Zeitlimit.
+  Zeitlimit und Zeitmodus.
 - Szenario: Rolle, Ausgangslage, Mission, Intro, Erfolg und Fehlschlag.
-- Raetselablauf: strukturierter Ablauf mit erlaubten Parallelgruppen statt
-  beliebig freiem Graph fuer Lehrende.
-- Raetselbausteine: alle aktuell aus The Last Hour ableitbaren Mechaniken.
+- Rätselablauf: strukturierter Ablauf mit erlaubten Parallelgruppen statt
+  beliebig freiem Graph für Lehrende.
+- Rätselbausteine: alle aktuell aus The Last Hour ableitbaren Mechaniken.
 - Inhalte: Texte direkt im Wizard, Bilder und Audio als Upload.
-- Validierung: keine Softlocks, keine unerreichbaren Raetsel, keine ungewollten
+- Validierung: keine Softlocks, keine unerreichbaren Rätsel, keine ungewollten
   Skips, keine fehlenden Pflichtparameter oder Assets.
-- Export: `deer.json`.
+- Paket erstellen: `deer.zip` mit `deer.json` und Assets nach erfolgreicher
+  Validierung.
 
 Nicht V0:
 
@@ -39,25 +40,38 @@ Nicht V0:
 - Pre-/Post-Tests,
 - mehrere Themes oder Custom-Themes,
 - Zwischeneditor nach dem Generator,
-- fertiger `deer.zip`-Export als erste UI-Pflicht.
+- spielbare Preview,
+- Neu-Generieren-Button,
+- automatischer Generator-Aufruf aus der Web-App,
+- lokaler Backend-Service oder offizieller CLI-Wrapper,
+- One-Click-Verpackung als `.jar`, `.exe` oder Installer.
 
 ## Authoring-Modell
 
 Lehrende bauen den Escape Room von Grund auf neu. The Last Hour liefert nur die
 aktuell vorhandenen Spielbausteine und wiederverwendbare Assets, aber keine
-vorausgewaehlte Raumstruktur.
+vorausgewählte Raumstruktur.
 
-Oberflaechen wie Computer, Keypad, Tuer, Weltobjekt oder Fragmentbereich
-entstehen aus den gewaehlten Bausteinen. Die UI darf diese Oberflaechen sichtbar
+Oberflächen wie Computer, Keypad, Tür, Weltobjekt oder Fragmentbereich
+entstehen aus den gewählten Bausteinen. Die UI darf diese Oberflächen sichtbar
 benennen und bei Bedarf konfigurieren, aber Lehrende sollen keine technische
-Slot-Liste vorab planen muessen.
+Slot-Liste vorab planen müssen.
+
+Intern schreibt der Wizard diese Oberflächen in ein `surfaces`-Register. Rätsel
+referenzieren konkrete Oberflächen über `surfaceId`, damit UI und Generator
+nicht mit freien, unvalidierbaren Strings arbeiten.
+
+Für V0 darf der Generator diese Oberflächen noch stark vereinfachen, z. B. nur
+eine Level-/World-Surface verwenden oder pro Computer-Baustein einen einfachen
+Computer erzeugen. Das Datenmodell bleibt trotzdem die Grundlage für spätere,
+genauere Platzierung.
 
 ## V0-Bausteine
 
 - `state_change`: einfache Weltaktion, z. B. Stromschalter.
 - `collection`: Item, Hinweis oder Ressource finden.
 - `input`: Zahlen-, Text-, Login- oder Decoding-Eingabe.
-- `choice`: richtige Option auswaehlen, z. B. E-Mail/URL.
+- `choice`: richtige Option auswählen, z. B. E-Mail/URL.
 - `item_use`: bestimmtes Item an einem Ziel verwenden, z. B. USB am PC.
 - `assembly`: Fragmente zusammensetzen.
 - `control_panel`: wiederverwendbare UI mit mehreren Controls.
@@ -65,23 +79,25 @@ Slot-Liste vorab planen muessen.
 ## Graph-Regeln
 
 Die UI sollte bevorzugt eine strukturierte Darstellung mit Reihenfolge und
-Parallelgruppen anbieten. Ein Canvas kann spaeter als alternative Visualisierung
+Parallelgruppen anbieten. Ein Canvas kann später als alternative Visualisierung
 dienen, sollte aber nicht die erste Bedienlogik erzwingen.
 
 Blockierend sind nur Game-Breaking-Probleme:
 
-- ein Raetsel ist nicht erreichbar,
-- ein Raetsel kann uebersprungen werden, obwohl es Progression ist,
-- ein benoetigtes Ergebnis wird nie erzeugt,
-- eine Abhaengigkeit ist zyklisch oder unloesbar,
+- ein Rätsel ist nicht erreichbar,
+- ein Rätsel kann übersprungen werden, obwohl es Progression ist,
+- ein benötigtes Ergebnis wird nie erzeugt,
+- eine Abhängigkeit ist zyklisch oder unlösbar,
 - ein Endzustand ist nicht erreichbar,
 - Pflichtparameter oder Pflichtassets fehlen,
-- ein Baustein wird mit einer inkompatiblen Oberflaeche kombiniert.
+- ein Baustein wird mit einer inkompatiblen Oberfläche kombiniert.
 
-Warnungen duerfen helfen, sollen aber den Export nicht blockieren.
+Warnungen dürfen helfen, sollen aber die Paket-Erstellung nicht blockieren.
 
-## Naechster Praktischer Schritt
+## Nächster Praktischer Schritt
 
-Der naechste sinnvolle Schritt ist ein UI-Prototyp, der die Schritte aus
-`wizard-ui-flow-v0.md` bedienbar macht und daraus eine schema-valide
-`deer.json` exportiert.
+Der nächste sinnvolle Schritt ist ein UI-Prototyp, der die Schritte aus
+`wizard-ui-flow-v0.md` bedienbar macht, daraus eine schema-valide interne
+`deer.json` erstellt und ein validiertes `deer.zip` packt. Der Generator wird in
+V0 manuell mit diesem Paket oder Projektordner gestartet; eine komfortablere
+Integration folgt später.

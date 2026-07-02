@@ -3,30 +3,53 @@
 ## Current Decisions
 
 - The editable authoring source is `deer.json`.
-- Generated room packages are shared as `deer.zip`.
-- `deer.zip` contains exactly one playable escape-room level.
-- The first Wizard UI prototype exposes only `deer.json` export. `deer.zip`
-  generation is the next integration step.
+- The visible V0 action for educators is creating a validated `deer.zip`.
+- `deer.zip` is the first shareable Wizard package.
+- In V0, the Java generator is started manually with `deer.zip` or the
+  unpacked project folder.
+- Backend, official CLI wrapper, runnable `.jar`, `.exe`, or installer are
+  later iterations.
+- One-click packaging remains a later iteration.
 - The first version supports only LibGDX-friendly custom media.
 - The first version uses one standard theme.
 - The wizard does not generate evaluation artifacts, telemetry profiles,
   debriefing guides, or pre/post tests in v0.
-- Generated runtime files are derived from `deer.json` and can be overwritten by
-  the generator.
+- Generated runtime files are derived from `deer.json` by the manually started
+  generator and can be overwritten by the generator.
 - Custom assets are content assets, not theme replacements.
-- The educator workflow should later become one-button simple: fill the wizard,
-  press generate, receive a shareable `deer.zip`.
-- The current web wizard target is smaller: create, validate, and export
-  `deer.json`.
-- The Java generator is responsible for producing the runtime package later.
-- A preview is useful, but optional for the first draft. Regeneration with a new
-  seed is required.
+- The educator workflow should be simple: fill the wizard, validate the design,
+  receive/share a `deer.zip`.
+- The current web wizard target is: create authoring data, validate it, package
+  `deer.json` and assets into `deer.zip`.
+- Live preview is out of V0.
+- A dedicated regenerate button is out of V0.
+- Deterministic regeneration with an explicit seed can be supported later as a
+  generator option, not as part of `deer.json`.
 
-## Package Shape
+## Packaging Direction
 
-The canonical representation during authoring and preview is an unpacked folder.
-The archive form, `deer.zip`, is only for sharing, import, export, and
-submission.
+The first implementation creates `deer.zip`. The goal after V0 is still a
+one-click or near-one-click result for non-technical educators, but that should
+not block the first foundation slice.
+
+Candidate formats:
+
+| Format | Benefit | Cost / Risk |
+|---|---|---|
+| `deer.zip` authoring/content package | Small, inspectable, shareable, can be consumed manually by the generator. | Not one-click; requires a separate generator/start step. |
+| Generated folder with launcher script | Practical V0 path; can include `deer.json`, assets, runtime files and `start.bat`. | Multiple files; sharing is less clean unless zipped. |
+| Self-contained `.jar` | One file, close to existing Java/Gradle packaging patterns. | Requires Java or a bundled runtime; larger artifact. |
+| Windows `.exe` launcher | Best one-click Windows UX. | Platform-specific, bigger build/signing/distribution burden. |
+| Installer or app bundle | Cleanest end-user install story. | Probably too much scope for V0. |
+
+V0 recommendation: start with `deer.zip` as the Wizard authoring/content package
+format. Keep the structure compatible with later generation of a startable
+folder, runnable `.jar`, Windows `.exe`, or installer. A Windows `.exe` should
+only be evaluated after the generator contract is stable.
+
+For V0, "package created" means: the Wizard successfully produces a valid
+`deer.zip` that contains the authoring model and assets. It does not yet mean
+that the educator receives a polished one-click executable.
 
 ## Authoring And Generation Workflow
 
@@ -36,36 +59,49 @@ The current UI-first workflow is:
 Web wizard
   -> writes/updates deer.json
   -> validates game-breaking constraints
-  -> exports deer.json
+  -> writes referenced assets into the project folder
+  -> creates deer.zip
+  -> UI shows package location
+  -> Java generator is started manually in V0
 ```
 
-The later integrated workflow is:
+There is no live preview step and no dedicated regenerate button in V0.
+
+Internal generator flow:
 
 ```text
-Web wizard
-  -> writes/updates deer.json
-  -> calls Java generator
-  -> generator validates the authoring model
-  -> generator creates/updates runtime files
-  -> generator exports deer.zip
+deer.zip or project folder
+  -> manual Java generator run
+  -> runtime files
+  -> selected packaging format
 ```
 
-The educator should not eventually have to manually export a JSON file and
-import it into a separate tool. For the first UI prototype, however, explicit
-`deer.json` export is the intended deliverable.
+The educator should not have to manually edit or copy a JSON file. `deer.json`
+is the internal source inside the package; `deer.zip` is the shareable handoff.
 
-Regeneration must be supported by changing the generation seed and running the
-generator again. With the same `deer.json` and the same seed, the output should
-be deterministic. With a different seed, the room may receive a different
-layout while preserving the same riddles, assets, graph dependencies, and
-solvability rules.
+If deterministic regeneration is needed later, the seed should be provided to
+the generator separately, for example through a CLI parameter, UI field in the
+generator screen, or a separate run file. It should not be stored in
+`deer.json`, because `deer.json` describes the intended room, not a specific
+generator execution.
 
-Preview is a separate feature decision. The first version may omit a live
-playable preview if the Java/web boundary is too expensive, but the package
-format should not prevent one later.
+Preview can be revisited later, but is intentionally outside V0.
+
+V0 Wizard package:
 
 ```text
-room-package/
+deer.zip
+  deer.json
+  assets/
+    custom/
+  validation/
+    authoring-report.json
+```
+
+Later generated runtime package:
+
+```text
+generated-room/
   deer.json
   room.json
   README.md
@@ -76,7 +112,7 @@ room-package/
   assets/
     custom/
   validation/
-    validation-report.md
+    generator-report.json
 ```
 
 ## File Roles
@@ -94,13 +130,26 @@ It contains the authoring model:
 - story beats,
 - riddle graph,
 - riddle parameters,
-- custom content asset references,
-- generation constraints.
+- custom content asset references.
 
 The current detailed draft is stored in
 [`deer-json-spec.md`](deer-json-spec.md). The first machine-readable schema is
-stored in [`deer.schema.json`](deer.schema.json). A small valid discussion
+stored in [`deer.schema.json`](deer.schema.json). A small valid V0
 example is stored in [`examples/deer.example.json`](examples/deer.example.json).
+
+### `deer.zip`
+
+The first shareable V0 package.
+
+It contains:
+
+- `deer.json`,
+- uploaded or copied assets with relative paths,
+- authoring validation report,
+- optional README or package metadata later.
+
+It does not have to contain generated `.level` files in the first Wizard
+version. Those are produced by the manually started generator.
 
 ### `room.json`
 
@@ -150,19 +199,19 @@ entered into the wizard or image assets generated/exported outside the wizard.
 
 ### `validation/`
 
-Generated validation support. This is not learning evaluation. It only records
-whether the package is structurally and technically usable.
+Validation support. This is not learning evaluation. It only records whether the
+package is structurally and technically usable.
 
-`validation-report.md` records schema, graph, asset, runtime, and generator
-checks.
+`authoring-report.json` records Wizard-side schema, graph, asset, and parameter
+checks. A later generator report can record runtime/generator checks.
 
-The client should prevent invalid states before the educator can export
-`deer.json`. Generator validation is still required later as a safety net for
-application bugs, edited JSON files, and future import workflows.
+The client should prevent invalid states before the educator can create a
+package. Generator validation is still required as a safety net for application
+bugs, edited JSON files, and future import workflows.
 
-The export button should be disabled until the client preflight is valid.
+The package button should be disabled until the client preflight is valid.
 Blocking errors should be shown at the step or graph element that caused them.
-Warnings may remain visible at export time, but must not be confused with
+Warnings may remain visible at package time, but must not be confused with
 blocking errors.
 
 ## Evaluation, Debriefing, Telemetry, Pre/Post Tests

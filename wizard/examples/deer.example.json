@@ -1,36 +1,80 @@
 {
-  "formatVersion": "0.4.0-draft",
+  "formatVersion": "0.1-draft",
   "metadata": {
     "id": "wizard_example_v0",
     "title": "Wizard Beispielraum V0",
     "locale": "de-DE",
-    "description": "Eine Beispielkonfiguration mit den aktuell verfuegbaren V0-Bausteinen.",
-    "author": {
-      "name": "Beispiel Lehrkraft",
-      "organization": "FH Beispiel"
-    }
+    "description": "Eine Beispielkonfiguration mit den aktuell verfügbaren V0-Bausteinen.",
+    "author": "Beispiel Lehrkraft"
   },
   "session": {
     "targetAudience": "Lernende im Bereich IT-Sicherheit",
     "priorKnowledge": "Grundlagen zu E-Mail, Webseiten und einfachen Codierungen.",
     "playerCount": {
       "min": 1,
-      "max": 4,
-      "recommended": 2
+      "max": 4
     },
-    "durationMinutes": 60,
-    "timeLimitMinutes": 60,
-    "collaborationMode": "cooperative"
+    "time": {
+      "limitMinutes": 60,
+      "limitMode": "hard"
+    }
   },
   "scenario": {
     "themeId": "default",
     "playerRole": "Untersuchungsteam",
     "premise": "Ein Forschungslabor ist verriegelt. Die Gruppe muss Hinweise rekonstruieren und den Ausgang freischalten.",
-    "mission": "Findet den finalen Zugangscode und oeffnet die Ausgangstuer.",
+    "mission": "Findet den finalen Zugangscode und öffnet die Ausgangstür.",
     "introText": "Der Alarm ist aktiv. Auf dem Wandtimer laufen 60 Minuten herunter.",
-    "successText": "Die Ausgangstuer oeffnet sich.",
+    "successText": "Die Ausgangstür öffnet sich.",
     "failureText": "Die Zeit ist abgelaufen."
   },
+  "surfaces": [
+    {
+      "id": "s_world",
+      "kind": "world",
+      "title": "Laborraum"
+    },
+    {
+      "id": "s_main_computer",
+      "kind": "computer",
+      "title": "Labor-PC"
+    },
+    {
+      "id": "s_storage_keypad",
+      "kind": "keypad",
+      "title": "Storage-Keypad"
+    },
+    {
+      "id": "s_storage_door",
+      "kind": "door",
+      "title": "Storage-Tür"
+    },
+    {
+      "id": "s_storage_area",
+      "kind": "container",
+      "title": "Storage-Bereich"
+    },
+    {
+      "id": "s_trash_area",
+      "kind": "container",
+      "title": "Papierkorb-Bereich"
+    },
+    {
+      "id": "s_vent",
+      "kind": "world_object",
+      "title": "Lüftung"
+    },
+    {
+      "id": "s_assembly_area",
+      "kind": "assembly_area",
+      "title": "Fragmentbereich"
+    },
+    {
+      "id": "s_exit_door",
+      "kind": "door",
+      "title": "Ausgangstür"
+    }
+  ],
   "riddleGraph": {
     "startNodeId": "n_start",
     "endNodeIds": [
@@ -93,7 +137,7 @@
       {
         "id": "n_connect_vent",
         "kind": "riddle",
-        "title": "Lueftung verbinden",
+        "title": "Lüftung verbinden",
         "riddleId": "r_connect_vent"
       },
       {
@@ -105,7 +149,7 @@
       {
         "id": "n_exit_panel",
         "kind": "riddle",
-        "title": "Ausgang oeffnen",
+        "title": "Ausgang öffnen",
         "riddleId": "r_exit_panel"
       },
       {
@@ -271,9 +315,15 @@
       ],
       "hints": [],
       "parameters": {
-        "interactionKind": "yes_no",
+        "surfaceId": "s_world",
+        "slotType": "world_interaction_slot",
+        "interactionKind": "confirm",
         "target": "power_switch",
-        "successText": "Die Stromversorgung springt an."
+        "successEffect": {
+          "type": "set_state",
+          "stateId": "power_on"
+        },
+        "successFeedback": "Die Stromversorgung springt an."
       }
     },
     {
@@ -283,7 +333,7 @@
       "designRole": "progression",
       "difficulty": "easy",
       "estimatedMinutes": 6,
-      "playerFacingTask": "Durchsucht Schreibtisch und Papierkoerbe nach Login-Hinweisen.",
+      "playerFacingTask": "Durchsucht Schreibtisch und Papierkörbe nach Login-Hinweisen.",
       "requiresTokens": [
         "token_power_on"
       ],
@@ -317,16 +367,26 @@
           "id": "h_login_credentials_1",
           "title": "Nicht alles liegt offen",
           "text": "Ein Teil der Zugangsdaten liegt in einem Container oder Papierkorb.",
-          "level": 1,
-          "trigger": "manual_request"
+          "severity": 1
         }
       ],
       "parameters": {
+        "surfaceId": "s_trash_area",
+        "slotType": "trash_slot",
+        "sourceKind": "trash_minigame",
+        "rewardMode": "collect_all",
         "rewards": [
           "asset_note_password_1",
           "asset_note_password_2"
         ],
-        "rewardMode": "collect_all"
+        "paperCount": 30,
+        "successEffect": {
+          "type": "grant_resources",
+          "resourceIds": [
+            "res_password_note_1",
+            "res_password_note_2"
+          ]
+        }
       }
     },
     {
@@ -358,6 +418,8 @@
       ],
       "hints": [],
       "parameters": {
+        "surfaceId": "s_main_computer",
+        "slotType": "computer_login_slot",
         "inputMode": "credentials",
         "fields": [
           {
@@ -371,7 +433,10 @@
             "answer": "a12b34xy"
           }
         ],
-        "successAction": "unlock_computer_ui"
+        "successEffect": {
+          "type": "unlock_surface",
+          "surfaceId": "s_main_computer"
+        }
       }
     },
     {
@@ -381,7 +446,7 @@
       "designRole": "progression",
       "difficulty": "medium",
       "estimatedMinutes": 10,
-      "playerFacingTask": "Prueft die E-Mails und waehlt die vertrauenswuerdige Recovery-Seite.",
+      "playerFacingTask": "Prüft die E-Mails und wählt die vertrauenswürdige Recovery-Seite.",
       "requiresTokens": [
         "token_pc_logged_in"
       ],
@@ -403,16 +468,32 @@
         {
           "id": "h_email_trust_1",
           "title": "Absender und Linkziel",
-          "text": "Vergleicht Absender, Tonfall und vollstaendige URL.",
-          "level": 1,
-          "trigger": "manual_request"
+          "text": "Vergleicht Absender, Tonfall und vollständige URL.",
+          "severity": 1,
+          "unlock": {
+            "operator": "any_of",
+            "conditions": [
+              {
+                "type": "failed_attempts",
+                "riddleId": "r_email_trust",
+                "count": 1
+              },
+              {
+                "type": "elapsed_time",
+                "seconds": 300
+              }
+            ]
+          }
         }
       ],
       "parameters": {
+        "surfaceId": "s_main_computer",
+        "slotType": "computer_choice_slot",
         "presentation": "email_list",
         "selectionMode": "single_correct",
         "correctOptionId": "mail_real_support",
-        "wrongOptionConsequence": "infect_computer",
+        "wrongChoicePolicy": "feedback_retry",
+        "wrongChoiceFeedback": "Diese Nachricht wirkt nicht vertrauenswürdig. Prüft Absender und Linkziel erneut.",
         "options": [
           {
             "id": "mail_real_support",
@@ -428,7 +509,11 @@
             "subject": "URGENT! Your Access Has Been Disabled",
             "url": "http://secure-sg4-reset-now.com/verify"
           }
-        ]
+        ],
+        "successEffect": {
+          "type": "set_state",
+          "stateId": "recovery_page_available"
+        }
       }
     },
     {
@@ -470,13 +555,18 @@
       ],
       "hints": [],
       "parameters": {
+        "surfaceId": "s_main_computer",
+        "slotType": "computer_input_slot",
         "inputMode": "decoded_text",
         "encodedValue": "00110110001101010011010000111000",
         "answer": "6548",
         "decoderSteps": [
           "binary_to_ascii"
         ],
-        "unlocksAssetId": "asset_unlock_code_document"
+        "successEffect": {
+          "type": "reveal_resource",
+          "resourceId": "res_unlock_code_document"
+        }
       }
     },
     {
@@ -486,7 +576,7 @@
       "designRole": "progression",
       "difficulty": "medium",
       "estimatedMinutes": 8,
-      "playerFacingTask": "Decodiert den Morse-Code aus dem Dokument und oeffnet die Storage-Tuer.",
+      "playerFacingTask": "Decodiert den Morse-Code aus dem Dokument und öffnet die Storage-Tür.",
       "requiresTokens": [
         "token_storage_code_recovered"
       ],
@@ -517,10 +607,15 @@
       ],
       "hints": [],
       "parameters": {
+        "surfaceId": "s_storage_keypad",
+        "slotType": "keypad_slot",
         "inputMode": "numeric",
         "answer": "3758",
         "maxLength": 4,
-        "successAction": "open_door_storage"
+        "successEffect": {
+          "type": "open_surface",
+          "surfaceId": "s_storage_door"
+        }
       }
     },
     {
@@ -552,19 +647,38 @@
         {
           "id": "h_blue_usb_1",
           "title": "Akrostichon",
-          "text": "Die Anfangsbuchstaben der Notiz koennen wichtiger sein als der eigentliche Text.",
-          "level": 1,
-          "trigger": "manual_request"
+          "text": "Die Anfangsbuchstaben der Notiz können wichtiger sein als der eigentliche Text.",
+          "severity": 1,
+          "unlock": {
+            "operator": "all_of",
+            "conditions": [
+              {
+                "type": "resource_viewed",
+                "resourceId": "res_usb_acrostic_note"
+              }
+            ]
+          }
         }
       ],
       "parameters": {
-        "rewardItemId": "item_usb_blue",
-        "rewardLocation": "trash_r2",
+        "surfaceId": "s_storage_area",
+        "slotType": "container_slot",
+        "sourceKind": "container",
+        "rewardMode": "single",
+        "rewards": [
+          "item_usb_blue"
+        ],
         "decoyItemIds": [
           "item_usb_red",
           "item_usb_green",
           "item_usb_yellow"
-        ]
+        ],
+        "successEffect": {
+          "type": "grant_items",
+          "itemIds": [
+            "item_usb_blue"
+          ]
+        }
       }
     },
     {
@@ -586,20 +700,35 @@
       "resources": [],
       "hints": [],
       "parameters": {
-        "requiredItemId": "item_usb_blue",
+        "surfaceId": "s_main_computer",
+        "slotType": "computer_usb_slot",
         "target": "pc_main",
-        "wrongItemConsequence": "temporary_security_shutdown",
-        "unlocksInterface": "control_panel"
+        "requiredItemId": "item_usb_blue",
+        "candidateItemIds": [
+          "item_usb_red",
+          "item_usb_green",
+          "item_usb_yellow",
+          "item_usb_blue"
+        ],
+        "wrongItemPolicy": "unknown_device_shutdown_retry",
+        "wrongItemFeedback": "Der PC meldet: Unbekanntes USB-Gerät.",
+        "shutdownDelayMs": 10000,
+        "resetState": "computer_on_logged_out",
+        "successEffect": {
+          "type": "mount_item",
+          "itemId": "item_usb_blue",
+          "targetSurfaceId": "s_main_computer"
+        }
       }
     },
     {
       "id": "r_connect_vent",
       "type": "control_panel",
-      "title": "Lueftung verbinden",
+      "title": "Lüftung verbinden",
       "designRole": "progression",
       "difficulty": "medium",
       "estimatedMinutes": 8,
-      "playerFacingTask": "Findet die Seriennummer der Lueftung und verbindet sie im Control Panel.",
+      "playerFacingTask": "Findet die Seriennummer der Lüftung und verbindet sie im Control Panel.",
       "requiresTokens": [
         "token_control_panel_available"
       ],
@@ -611,7 +740,7 @@
         {
           "id": "res_vent_serial",
           "kind": "world_object",
-          "title": "Seriennummer an der Lueftung",
+          "title": "Seriennummer an der Lüftung",
           "text": "sv00049221",
           "availability": "visible_in_level",
           "purpose": "clue"
@@ -619,7 +748,7 @@
         {
           "id": "res_decoy_vent_serial_1",
           "kind": "world_object",
-          "title": "Beschaedigte Seriennummer",
+          "title": "Beschädigte Seriennummer",
           "text": "sv00057---",
           "availability": "visible_in_level",
           "purpose": "decoy"
@@ -627,6 +756,8 @@
       ],
       "hints": [],
       "parameters": {
+        "surfaceId": "s_main_computer",
+        "slotType": "computer_panel_slot",
         "controls": [
           {
             "id": "connect_ac",
@@ -643,7 +774,12 @@
             "setsState": "ac_started"
           }
         ],
-        "completionState": "ac_started"
+        "completionState": "ac_started",
+        "successEffect": {
+          "type": "spawn_content",
+          "surfaceId": "s_assembly_area",
+          "resourceId": "res_final_code_fragments"
+        }
       }
     },
     {
@@ -676,21 +812,27 @@
       ],
       "hints": [],
       "parameters": {
+        "surfaceId": "s_assembly_area",
+        "slotType": "assembly_slot",
         "assemblyMode": "image_fragments",
-        "imageAssetId": "asset_final_code",
+        "sourceAssetId": "asset_final_code",
         "pieceCount": 4,
-        "seed": 1586791695537379744,
-        "revealedAnswer": "214795541"
+        "resultResourceId": "res_final_code_fragments",
+        "revealedAnswer": "214795541",
+        "successEffect": {
+          "type": "reveal_resource",
+          "resourceId": "res_exit_password"
+        }
       }
     },
     {
       "id": "r_exit_panel",
       "type": "control_panel",
-      "title": "Ausgang oeffnen",
+      "title": "Ausgang öffnen",
       "designRole": "progression",
       "difficulty": "easy",
       "estimatedMinutes": 3,
-      "playerFacingTask": "Gebt das finale Passwort im Control Panel ein und oeffnet die Ausgangstuer.",
+      "playerFacingTask": "Gebt das finale Passwort im Control Panel ein und öffnet die Ausgangstür.",
       "requiresTokens": [
         "token_exit_password_revealed"
       ],
@@ -711,6 +853,8 @@
       ],
       "hints": [],
       "parameters": {
+        "surfaceId": "s_main_computer",
+        "slotType": "computer_panel_slot",
         "controls": [
           {
             "id": "unlock_exit",
@@ -727,7 +871,11 @@
             "setsState": "exit_open"
           }
         ],
-        "completionState": "exit_open"
+        "completionState": "exit_open",
+        "successEffect": {
+          "type": "open_surface",
+          "surfaceId": "s_exit_door"
+        }
       }
     }
   ],
@@ -830,17 +978,5 @@
         "license": "project_asset"
       }
     }
-  ],
-  "generation": {
-    "seed": 7341,
-    "levelCount": 1,
-    "layoutProfile": "default_lab",
-    "targetRuntime": "dungeon_escape_room",
-    "constraints": {
-      "allowBranches": true,
-      "allowOptionalRiddles": false,
-      "maxRiddles": 12,
-      "usePredefinedThemeOnly": true
-    }
-  }
+  ]
 }
