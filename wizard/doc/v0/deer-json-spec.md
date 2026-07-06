@@ -1,19 +1,20 @@
 # deer.json Spezifikation
 
-Status: 0.1-draft Diskussionsstand
+Status: 0.1-draft V0-Contract
 Stand: 02.07.2026
 Scope: V0, ein spielbarer Escape-Room-Level, ein Standard-Theme
 
 ## 1. Rolle Von deer.json
 
 `deer.json` ist die interne editierbare Quelle des Wizards und der Contract zum
-Generator. Der Wizard liest und schreibt diese Datei. Der Generator darf daraus
-Runtime-Dateien ableiten, aber `deer.json` bleibt das Authoring-Modell.
+manuell gestarteten Java-Generator. Der Wizard liest und schreibt diese Datei.
+Der Generator darf daraus Runtime-Dateien ableiten, aber `deer.json` bleibt das
+Authoring-Modell.
 
 Für Lehrende ist `deer.json` in V0 nicht das sichtbare Endprodukt. Die
-sichtbare Abschlussaktion ist `Paket erstellen`; danach wird ein `deer.zip`
-mit `deer.json` und referenzierten Assets heruntergeladen. Der Java-Generator
-wird in V0 noch manuell mit diesem Paket oder dem entpackten Projektordner
+sichtbare Abschlussaktion ist der `deer.zip`-Export; danach wird ein Paket mit
+`deer.json` und referenzierten Assets heruntergeladen. Der Java-Generator wird
+in V0 noch manuell mit diesem Paket oder dem entpackten Projektordner
 gestartet.
 
 V0 beschreibt:
@@ -28,7 +29,7 @@ Raum-Metadaten
 -> Assets
 ```
 
-Ein erster Vorschlag für die typ-spezifischen Pflichtparameter steht in
+Die typ-spezifischen Pflichtparameter stehen in
 [`parameter-table-v0.md`](parameter-table-v0.md).
 
 Der UI-orientierte Wizard-Ablauf und die von Lehrenden auszufüllenden Felder
@@ -37,19 +38,16 @@ stehen in [`wizard-ui-flow-v0.md`](wizard-ui-flow-v0.md).
 Explizit nicht V0:
 
 - Lernziele im Format,
-- Evaluation, ob Lernziele erreicht wurden,
-- Telemetrieprofile,
-- Debriefing-Fragen,
-- automatisch generierte Pre-/Post-Tests,
 - mehrere Themes,
 - Custom-Themes, Tilesets, Sprites oder UI-Skins,
 - binäre Assets direkt in JSON,
-- Generator-Laufparameter wie Seed, Layout-Profil oder technische Constraints,
+- automatisch gestarteter Generator,
+- Einlesen bestehender `deer.zip`-Pakete in den Wizard,
 - generierte `.level`-Dateien.
 
 ## 2. Top-Level Struktur
 
-V0-Draft:
+Top-Level-Struktur:
 
 ```json
 {
@@ -127,7 +125,7 @@ Optional in V0:
 - `description`
 - `author` als einfacher String
 
-V0-Default:
+V0-Regel:
 
 - `locale` ist standardmäßig `de-DE`. Mehrsprachigkeit kann später folgen,
   ohne das Feld neu einzuführen.
@@ -380,247 +378,24 @@ Interaktion selbst das Ereignis ist. Das deckt später Schalter, Hebel,
 Druckplatten, Stromkreise, bewegliche Objekte oder einfache Trigger ab, ohne sie
 künstlich als Code-/Text-Eingabe zu modellieren.
 
-### 10.1 Warum Diese Zusammenfassung?
+### 10.1 Typ-Spezifische Parameter
 
-Die vorherigen Typen waren zu nah an The Last Hour:
+Die detaillierten Pflicht- und Optionalparameter der einzelnen Rätseltypen
+stehen in [`parameter-table-v0.md`](parameter-table-v0.md). Diese Spezifikation
+hält nur den gemeinsamen Authoring-Contract fest:
 
-```text
-credential_login -> input
-decode_input -> input
-message_trust -> choice
-image_fragment_puzzle -> assembly
-search_reward -> collection
-inspect_content -> resources
-item_gate -> item_use
-```
+- Alle Rätsel enthalten ein `parameters`-Objekt.
+- Alle Rätsel enthalten ein `resources`-Array. Wenn es keine Ressourcen gibt,
+  ist es leer.
+- `resources` beschreiben normale Hinweise, Kontext, Anleitungen oder Decoys
+  im Raum. Sie erzeugen keine Graph-Tokens.
+- Hints sind optionale Zusatzhilfen und stehen immer in einem `hints`-Array.
+- `successEffect` ist ein kontrollierter Effekt nach erfolgreicher Lösung,
+  kein Freitext.
+- Graph-Tokens entstehen nur über `riddle.producesTokens`.
 
-`control_panel` bleibt bewusst separat. Es ist nicht nur eine einzelne Eingabe,
-sondern eine zusammengesetzte Interaktionsoberfläche mit mehreren Controls und
-Weltzustandsänderungen. Das ist wiederverwendbar genug, um einen eigenen Typ zu
-rechtfertigen.
-
-`inspect_content` wird nicht mehr als eigener Rätseltyp geführt. Solche
-Inhalte sind Ressourcen eines Rätsels, weil sie meistens ein anderes Rätsel
-vorbereiten oder stützen.
-
-Alle Rätsel enthalten immer ein `resources`-Array. Wenn ein Rätsel keine
-Ressourcen hat, ist es ein leeres Array. Dadurch bleibt die Struktur für Wizard,
-Generator und spätere Validierung stabil.
-
-### 10.2 input
-
-`input` bleibt breit, muss aber über `parameters.inputMode` eingegrenzt werden.
-Dadurch bleibt die Kategorie allgemein, ohne dass Keypads, Login-Dialoge und
-Decoding-Felder unklar werden.
-
-V0-Werte für `inputMode`:
-
-- `numeric`: Zahlenfeld, z. B. Keypad. Erwartet `answer`, `maxLength`.
-- `text`: kurzes Textfeld. Erwartet `answer`, optional `maxLength`.
-- `credentials`: mehrere benannte Felder. Erwartet `fields`.
-- `decoded_text`: Decoding-Aufgabe. Erwartet `encodedValue`, `answer`,
-  optional `decoderSteps`.
-
-Beispiel Keypad:
-
-```json
-{
-  "type": "input",
-  "parameters": {
-    "inputMode": "numeric",
-    "answer": "3758",
-    "maxLength": 4,
-    "successEffect": {
-      "type": "open_surface",
-      "surfaceId": "s_storage_door"
-    }
-  }
-}
-```
-
-### 10.3 choice
-
-`choice` deckt einfache Multiple-Choice-, Mehrfachauswahl- und
-Zuordnungsaufgaben ab.
-
-V0-Werte für `selectionMode`:
-
-- `single_correct`
-- `multiple_correct`
-- `classification`
-
-Beispiele:
-
-- eine sichere E-Mail aus mehreren E-Mails auswählen,
-- mehrere passende Gegenstände markieren,
-- Begriffe Kategorien zuordnen.
-
-### 10.4 resources
-
-`resources` sind Informationen, die im Raum, in Dialogen, in Dateien oder als
-Asset bereits Teil des Rätseldesigns sind. Sie sind keine Hilfen im Sinne des
-Hint-Systems. Eine Ressource kann ein notwendiger Hinweis, Kontext, Decoy oder
-eine Anleitung sein.
-
-```json
-{
-  "id": "res_morse_manual",
-  "kind": "asset",
-  "title": "Morse-Tabelle",
-  "assetId": "asset_morse_manual",
-  "availability": "visible_in_level",
-  "purpose": "clue"
-}
-```
-
-V0-Werte für `kind`:
-
-- `inline_text`
-- `asset`
-- `world_object`
-- `computer_file`
-
-V0-Werte für `availability`:
-
-- `visible_in_level`
-- `inside_container`
-- `after_token`
-- `generated_by_riddle`
-
-V0-Werte für `purpose`:
-
-- `clue`
-- `context`
-- `instruction`
-- `decoy`
-
-Ressourcen erzeugen keine Tokens. Graph-Tokens entstehen nur über
-`riddle.producesTokens`. Wenn das Lesen oder Finden einer Information
-Spielfortschritt erzeugen soll, wird diese Aktion als Rätsel modelliert,
-meistens als `collection`, `input`, `choice`, `state_change` oder
-`control_panel`.
-
-### 10.5 control_panel
-
-`control_panel` ist ein eigener Rätseltyp für zusammengesetzte UI-Interaktion.
-Ein Panel kann mehrere Controls enthalten. Diese Controls können interne
-Panel-Zustände setzen, erzeugen aber keine Graph-Tokens. Graph-Tokens stehen
-weiterhin nur auf Rätsel-Ebene in `producesTokens`.
-
-V0-Control-Arten:
-
-- `button`
-- `toggle`
-- `text_input`
-- `password_input`
-
-Beispiel:
-
-```json
-{
-  "type": "control_panel",
-  "producesTokens": ["token_exit_open"],
-  "parameters": {
-    "controls": [
-      {
-        "id": "unlock_exit",
-        "kind": "password_input",
-        "answer": "214795541",
-        "setsState": "exit_unlocked"
-      },
-      {
-        "id": "open_exit",
-        "kind": "button",
-        "requiresStates": ["exit_unlocked"],
-        "setsState": "exit_open"
-      }
-    ],
-    "completionState": "exit_open"
-  }
-}
-```
-
-### 10.6 hints
-
-Hints sind in V0 optional. Ein Hint ist nicht die normale Informationsquelle des
-Rätsels, sondern zusätzliche Unterstützung.
-
-Ohne `unlock` ist ein Hint sofort verfügbar. Mit `unlock` kann der Wizard
-beschreiben, dass ein Hint erst nach bestimmten Bedingungen freigeschaltet wird.
-Der Generator kann diese Bedingungen später auf Petri-Net-Places/Tokens oder
-andere Runtime-Ereignisse abbilden.
-
-```json
-{
-  "id": "h_pc_login_1",
-  "title": "Zwei Notizen",
-  "text": "Die Zugangsdaten stehen nicht an einer einzigen Stelle.",
-  "severity": 1,
-  "unlock": {
-    "operator": "any_of",
-    "conditions": [
-      {
-        "type": "failed_attempts",
-        "riddleId": "r_pc_login",
-        "count": 2
-      },
-      {
-        "type": "elapsed_time",
-        "seconds": 300
-      }
-    ]
-  }
-}
-```
-
-V0-Werte für `unlock.operator`:
-
-- `all_of`
-- `any_of`
-
-V0-Werte für `unlock.conditions[].type`:
-
-- `elapsed_time`: nach einer Zeitangabe, Pflichtfeld `seconds`.
-- `failed_attempts`: nach Fehlversuchen in einem Rätsel, Pflichtfelder
-  `riddleId` und `count`.
-- `resource_viewed`: nachdem eine Ressource/Information gelesen wurde,
-  Pflichtfeld `resourceId`.
-- `surface_visited`: nachdem eine Oberfläche/Ort besucht wurde, Pflichtfeld
-  `surfaceId`.
-- `riddle_completed`: nachdem ein Rätsel abgeschlossen wurde, Pflichtfeld
-  `riddleId`.
-- `token_available`: technische/interne Bedingung für Generator/Runtime,
-  Pflichtfeld `token`; sollte in der UI nicht als primärer Begriff erscheinen.
-
-### 10.7 successEffect
-
-`successEffect` beschreibt, was im Raum passiert, wenn ein Rätsel erfolgreich
-gelöst wurde. Lehrende sollen diesen Begriff nicht sehen. Die UI zeigt fachlich
-z. B. "Storage-Tür öffnen"; intern speichert der Wizard einen kontrollierten
-Effekt.
-
-V0-Empfehlung:
-
-```json
-{
-  "type": "open_surface",
-  "surfaceId": "s_storage_door"
-}
-```
-
-Erste Action-Kategorien:
-
-- `set_state`
-- `grant_resources`
-- `grant_items`
-- `unlock_surface`
-- `open_surface`
-- `mount_item`
-- `spawn_content`
-- `reveal_resource`
-
-`successEffect` ist kein Freitext. Der `type` muss aus einer kontrollierten
-Liste kommen und die referenzierten IDs müssen existieren.
+Diese Trennung hält `deer-json-spec.md` als Strukturvertrag lesbar und nutzt die
+Parameter-Tabelle als Detailquelle für UI und Validatoren.
 
 ## 11. assets
 
@@ -666,33 +441,18 @@ Validierung:
 - Required Assets müssen im Paket existieren.
 - PDFs und Office-Dateien sind in V0 nicht direkt runtime-fähig.
 
-## 12. Generator-Laufparameter
+## 12. V0-Export Und Generator-Handoff
 
-`deer.json` beschreibt, was der Escape Room sein soll. Sie beschreibt nicht, wie
-ein bestimmter Generatorlauf technisch ausgeführt wird.
+`deer.json` beschreibt, was der Escape Room sein soll. Die Web-App erzeugt eine
+valide Datei und packt sie mit den referenzierten Assets in ein
+herunterladbares `deer.zip`.
 
-Deshalb gibt es in V0 kein `generation`-Objekt in `deer.json`.
+Der Java-Generator wird in V0 manuell mit diesem Paket oder dem entpackten
+Projektordner gestartet. Das Einlesen bestehender `deer.zip`-Pakete in den
+Wizard ist nicht Teil von V0.
 
-Nicht Teil von `deer.json`:
-
-- Seed,
-- Layout-Profil,
-- Ziel-Runtime,
-- maximale Rätselanzahl,
-- Theme-Constraint,
-- Branch-/Optionalitäts-Flags,
-- Levelanzahl.
-
-Diese Regeln liegen im Wizard, im Schema oder im späteren Generator. Wenn der
-Generator später reproduzierbare Läufe braucht, sollte der Seed als separater
-Generator-Parameter oder in einer separaten Run-Datei stehen, nicht im
-Authoring-Modell.
-
-Die sichtbare Bedienung in V0 bleibt: Die UI prüft den Entwurf, erzeugt intern
-eine valide `deer.json` und packt daraus mit den Assets ein herunterladbares
-`deer.zip`. Der Generator wird für V0 manuell mit diesem Paket oder dem
-Projektordner gestartet. Import bestehender `deer.zip`-Pakete ist nicht Teil von
-V0.
+Technische Angaben für einen konkreten Generatorlauf gehören nicht in
+`deer.json`, weil sie nicht zum Authoring-Modell des Raums gehören.
 
 ## 13. Harte Validierungen
 
@@ -732,9 +492,9 @@ Die Paket-Erstellung wird blockiert, wenn:
 - `scenario.themeId` nicht `default` ist.
 
 Der Wizard sollte diese Fehler schon im Client verhindern. Der Generator muss
-sie trotzdem erneut prüfen, weil `deer.json` importiert oder manuell editiert
-werden kann und weil Client-Fehler nicht zu kaputten Escape Rooms führen
-dürfen.
+sie trotzdem erneut prüfen, weil `deer.json` aus dem Paket entnommen und
+manuell verändert werden kann und weil Client-Fehler nicht zu kaputten Escape
+Rooms führen dürfen.
 
 ### 13.1 Validierungszeitpunkte
 
@@ -754,8 +514,8 @@ V0-Validierung läuft in drei Stufen:
    Graph, Pflichtparameter und Asset-Referenzen gültig sind.
 
 Der Java-Generator führt dieselben harten Validierungen erneut aus. Das ist
-kein Ersatz für Client-Validierung, sondern ein Sicherheitsnetz für importierte
-oder manuell veränderte `deer.json`-Dateien und für Fehler im Wizard-Client.
+kein Ersatz für Client-Validierung, sondern ein Sicherheitsnetz für manuell
+veränderte `deer.json`-Dateien und für Fehler im Wizard-Client.
 
 ## 14. Warnungen
 
@@ -795,5 +555,3 @@ Diese Punkte müssen nicht vor dem UI-Prototyp entschieden werden:
 2. Welche `inputMode`-Werte der Generator zuerst komplett spielbar macht.
 3. Wie `choice`, `item_use`, `assembly` und `state_change` intern in Dungeon-
    Systeme übersetzt werden.
-4. Welches Verpackungsformat der Generator für die One-Click-Nutzung erzeugt.
-5. Wie der neue Dungeon-Starter ein erzeugtes Wizard-Paket lädt.

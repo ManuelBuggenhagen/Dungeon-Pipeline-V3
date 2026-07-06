@@ -14,7 +14,7 @@ Gezielt geprüft wurden Quellen zu:
 - schulnahen Reviews und Framework-Synthesen.
 
 Die Web-Suche bestätigt: Viele der stärksten Quellen liegen bereits in der
-lokalen Masterarbeits-Literatur. Deshalb ist diese Datei keine zweite
+gesichteten Masterarbeits-Literatur. Deshalb ist diese Datei keine zweite
 Vollbibliographie, sondern eine kurze Web-verifizierte Ergänzung.
 
 ## Besonders Nützliche Web-Quellen
@@ -37,7 +37,7 @@ Vollbibliographie, sondern eine kurze Web-verifizierte Ergänzung.
 - DOI: <https://doi.org/10.1007/s10639-022-11087-4>
 - Priorität: core/secondary.
 - Nutzen: Stützt die Trennung zwischen Usability, Pädagogik, Spielqualität,
-  Kontext und Datenanalyse. Wichtig für die Wizard-Evaluation.
+  Kontext und Datenanalyse in späteren Evaluationsphasen.
 
 ### Dashboard und Game-Master-Orchestrierung
 
@@ -102,9 +102,8 @@ Vollbibliographie, sondern eine kurze Web-verifizierte Ergänzung.
 - DOI: <https://doi.org/10.1007/978-3-319-70111-0_7>
 - Priorität: core/secondary für Architektur.
 - Abdeckung: neue Ergänzung; sehr passend zum `deer.zip`-Lebenszyklus.
-- Nutzen: Stützt die Verbindung von Authoring, Runtime und Analytics. Das passt
-  direkt zur Idee, dass `deer.json` nicht nur Generierung steuert, sondern auch
-  Traceability und spätere Auswertung vorbereitet.
+- Nutzen: Stützt die Verbindung von Authoring, Runtime und Analytics als
+  Forschungskontext für spätere Traceability- und Auswertungsarbeit.
 
 ### Moirai Usability Follow-up
 
@@ -115,8 +114,8 @@ Vollbibliographie, sondern eine kurze Web-verifizierte Ergänzung.
 - Priorität: secondary/future evaluation.
 - Abdeckung: neue Ergänzung zu Moirai 2022, das bereits im Kernset steht.
 - Nutzen: Später brauchbar, wenn die Wizard-Oberfläche selbst evaluiert wird.
-  Für das morgige Konzept reicht es als Hinweis, dass No-Code-Authoring nicht
-  nur technisch, sondern auch usability-seitig untersucht werden muss.
+  Für das aktuelle V0-Konzept reicht es als Hinweis, dass No-Code-Authoring auch
+  usability-seitig untersucht werden kann.
 
 ### Very Recent No-Code 3D Authoring Comparison
 
@@ -134,9 +133,9 @@ Vollbibliographie, sondern eine kurze Web-verifizierte Ergänzung.
 
 - Der stärkste wissenschaftliche Beitrag bleibt nicht die UI, sondern das
   config-first Authoring-Modell mit Validierung.
-- `traceability.json`, Debriefing-Guide, Validierungsbericht und
-  `telemetry-profile.json` sind besser begründbar als automatisch generierte
-  Wissens-Pre-/Posttests.
+- Für spätere Forschungs-/Evaluationsphasen sind Traceability-, Debriefing-,
+  Validierungs- und Telemetrieartefakte wissenschaftlich gut begründbar; sie
+  bleiben außerhalb Wizard V0.
 - LMS/xAPI-Integration ist strategisch relevant, sollte aber erst nach stabilem
   `deer.zip`- und Runtime-Vertrag umgesetzt werden.
 - No-code-Authoring-Literatur spricht für eine eigenständige oder austauschbare

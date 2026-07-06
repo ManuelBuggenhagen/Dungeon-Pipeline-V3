@@ -6,10 +6,10 @@ goal artifacts are not part of Wizard V0.
 
 ## Herkunft
 
-Geprüfte lokale Quellen:
+Geprüfte Quellensammlungen:
 
-- lokale Literaturauswahl der Masterarbeit
-- lokale Paper-Auswahl der Masterarbeit
+- Literaturauswahl der Masterarbeit
+- Paper-Auswahl der Masterarbeit
 
 ## Direkt Relevante Ergänzungen Für Das Wizard-Konzept
 
@@ -19,8 +19,8 @@ Geprüfte lokale Quellen:
 - Priorität: core.
 - Relevanz: Plattform für Durchführung, Team-/Puzzle-Steuerung, Monitoring und
   Logdaten in Educational Escape Rooms.
-- Nutzen für Wizard: Vergleichsquelle für `deer.zip`, Preview/Runtime,
-  Telemetrieprofil und skalierbare Durchführung.
+- Nutzen für Wizard: Vergleichsquelle für `deer.zip`, Preview/Runtime und
+  skalierbare Durchführung.
 
 ### Lopez-Pernas et al. 2024 - Sequence Dashboard
 
@@ -28,8 +28,7 @@ Geprüfte lokale Quellen:
 - Priorität: core.
 - Relevanz: Dashboard für Echtzeit-Fortschritt in Educational Escape Rooms,
   basierend auf Sequenzanalyse.
-- Nutzen für Wizard: Stützt `telemetry-profile.json`, Lehrenden-Preview,
-  Monitoring und spätere Auswertungsansichten.
+- Nutzen für Wizard: Kontext für spätere Monitoring- und Auswertungsansichten.
 
 ### Queiros 2024 - GERF
 
@@ -37,9 +36,8 @@ Geprüfte lokale Quellen:
 - Priorität: core/secondary.
 - Relevanz: Framework für virtuelle Educational Escape Rooms mit LTI, xAPI,
   Learning Analytics und adaptiven Lernpfaden.
-- Nutzen für Wizard: Besonders relevant für Schnittstellen, xAPI-nahe
-  Telemetrie und die Frage, wie `room.json`/Evaluation an Lernplattformen
-  anschließen kann.
+- Nutzen für Wizard: Besonders relevant für spätere Schnittstellen, xAPI-nahe
+  Evaluation und Lernplattform-Anbindung außerhalb Wizard V0.
 
 ### Sousa et al. 2022 - Adaptability and PCG
 
@@ -56,8 +54,8 @@ Geprüfte lokale Quellen:
 - Priorität: core.
 - Relevanz: Standardisierung, Visualisierung und Analyse von Spielinteraktionen
   in Serious Games.
-- Nutzen für Wizard: Methodische Grundlage für `telemetry-profile.json`,
-  Traceability und spätere Auswertung.
+- Nutzen für Wizard: Methodische Grundlage für spätere Telemetrie-,
+  Traceability- und Auswertungsarbeit.
 
 ### Daoudi 2022 - Learning Analytics and Serious-Game Usability
 
@@ -74,8 +72,8 @@ Geprüfte lokale Quellen:
 - Priorität: secondary/core für Monitoring.
 - Relevanz: Digitaler Companion für Monitoring, Game-Master-Unterstützung und
   Debriefing in einem Mixed-Reality-Spiel.
-- Nutzen für Wizard: Vergleichsquelle für Preview, Live-Monitoring,
-  Lehrendenunterstützung und Debriefing.
+- Nutzen für Wizard: Vergleichsquelle für spätere Preview-, Monitoring-,
+  Lehrendenunterstützungs- und Debriefing-Konzepte.
 
 ### Gordillo and Lopez-Fernandez 2024 - Randomized Controlled Trial
 
@@ -111,9 +109,8 @@ Geprüfte lokale Quellen:
 - Priorität: secondary/core für Future Skills.
 - Relevanz: Game-Development-Based Learning mit Escape-Game-Template und
   Assessment von 21st Century Skills.
-- Nutzen für Wizard: Stützt die Idee, Templates/LowCode-Strukturen nicht nur als
-  technische Vereinfachung, sondern als Kompetenz- und Assessment-Rahmen zu
-  verstehen.
+- Nutzen für Wizard: Kontext für spätere Kompetenz- und Assessment-Fragen rund
+  um Templates/LowCode-Strukturen.
 
 ### Rawlinson and Whitton 2024 - Learning Through Failure
 
@@ -121,8 +118,8 @@ Geprüfte lokale Quellen:
 - Priorität: secondary.
 - Relevanz: Theoretische Einordnung von Fehlern, Wiederholung, Hints und
   Reflexion als Lerngelegenheiten in Escape Rooms.
-- Nutzen für Wizard: Stützt Debriefing, Hint-Design und die Interpretation von
-  Fehler-/Retry-Telemetrie.
+- Nutzen für Wizard: Stützt spätere Debriefing- und Hint-Design-Fragen sowie
+  vorsichtige Interpretation von Fehler-/Retry-Daten.
 
 ## Gute, Aber Eher Sekundäre Ergänzungen
 
@@ -143,7 +140,7 @@ Geprüfte lokale Quellen:
 - DOI: <https://doi.org/10.1145/3402942.3409622>
 - Nutzen: zeigt, wie Spielmuster konkreten kognitiven Kompetenzen zugeordnet
   werden können.
-- Empfehlung: interessant für `LearningGoal-Riddle-Mechanic-Evidence-Mapping`,
+- Empfehlung: interessant für spätere Learning-Goal-/Riddle-/Mechanic-Mappings,
   aber keine DEER-Kernquelle.
 
 ### Keller et al. 2025 - Cybersecurity DEER

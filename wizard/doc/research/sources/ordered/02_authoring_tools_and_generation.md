@@ -22,8 +22,8 @@
 - Priority: core.
 - Use: Systematic literature review on instructional-design support in serious
   game authoring tools.
-- Wizard relevance: Supports making learning outcomes and instructional design
-  explicit in the authoring workflow instead of treating them as afterthoughts.
+- Wizard relevance: Supports future instructional-design extensions without
+  making learning outcomes a Wizard V0 requirement.
 
 ### Roungas 2016 - Model-Driven Educational Game Design
 

@@ -1,12 +1,11 @@
-# 04 - Local Prior Work: Dungeon Evaluation Thesis
+# 04 - Prior Work: Dungeon Evaluation Thesis
 
 Scope note: This file documents reusable prior work for future evaluation
 phases. The current Wizard V0 does not generate evaluation artifacts.
 
-## Schumann Thesis - Automated Dungeon Evaluation
+## Prior Dungeon Evaluation Thesis - Automated Evaluation
 
-- Local source: Schumann master thesis PDF, not stored in this repository.
-- Priority: local prior work.
+- Priority: project prior work.
 - Use: Prior automated evaluation system for Dungeon, originally focused on
   Future Skills.
 - Wizard relevance: The evaluation logic transfers well to educational escape
@@ -20,7 +19,7 @@ defines mappings from skill targets to mechanics, expected behavior, and
 measurable parameters, then interprets telemetry together with surveys and
 qualitative/contextual data.
 
-Relevant sections from the thesis explorer pass:
+Relevant thesis sections:
 
 - pp. 59-62: skill-mechanic mapping; telemetry measures behavior, not
   competence.
@@ -38,8 +37,8 @@ Relevant sections from the thesis explorer pass:
 
 ## Future Transfer to the Wizard
 
-For a later evaluation-focused version, the wizard could generate a traceability
-and evaluation package for every room:
+For a later evaluation-focused version, a generated room could be accompanied by
+a traceability and evaluation model:
 
 ```text
 learning goal
@@ -51,15 +50,13 @@ learning goal
 -> success/quality criterion
 ```
 
-Candidate future package artifacts:
+Candidate future artifact categories:
 
-- `evaluation/traceability.json`
-- `evaluation/traceability.md`
-- `evaluation/telemetry-profile.json`
-- `evaluation/debriefing-guide.md`
-- `evaluation/survey-pre.json`
-- `evaluation/survey-post.json`
-- `evaluation/validation-report.md`
+- traceability overview
+- telemetry profile
+- debriefing guide
+- optional pre/post survey material
+- validation report
 
 Design note for later versions: Debriefing should not be treated as optional
 decoration. Telemetry can say what happened; debriefing helps educators and

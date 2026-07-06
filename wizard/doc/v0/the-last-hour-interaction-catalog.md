@@ -294,7 +294,7 @@ Computer-Generalisierung in V0 gehen soll:
 - nur wiederverwendete Spezial-Tabs aus The Last Hour,
 - oder normale Dialoge als technischer Fallback für einzelne Rätsel.
 
-Ein erster Vorschlag für diese Parameter-Tabelle steht in
+Die Parameter-Tabelle steht in
 [`parameter-table-v0.md`](parameter-table-v0.md).
 
 Der Wizard-Ablauf aus Lehrenden-Sicht steht in

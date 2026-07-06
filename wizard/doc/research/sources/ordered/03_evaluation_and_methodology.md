@@ -57,19 +57,19 @@ features.
 - DOI: <https://doi.org/10.1080/10494820.2022.2041045>
 - Priority: secondary/core for runtime evaluation.
 - Use: Learning-analytics perspective on educational escape rooms.
-- Wizard relevance: Supports runtime logging of progression, hint usage,
-  sequence patterns, and completion data.
+- Wizard relevance: Useful context for later runtime evaluation and analytics
+  work outside Wizard V0.
 
 ## Secondary and Background Sources
 
-### Local Dungeon Evaluation Thesis
+### Prior Dungeon Evaluation Thesis
 
 - See: [`04_local_prior_work.md`](04_local_prior_work.md)
-- Priority: local prior work.
+- Priority: project prior work.
 - Use: Transfers the existing automated Dungeon evaluation approach from Future
   Skills to educational escape-room learning goals.
-- Wizard relevance: Supports generating traceability, telemetry profiles,
-  debriefing guides, and pre/post survey templates as part of the room package.
+- Wizard relevance: Supports future traceability, telemetry, debriefing, and
+  survey concepts outside Wizard V0.
 
 ### Gomez et al. 2022 - Game-Based Assessment Review
 

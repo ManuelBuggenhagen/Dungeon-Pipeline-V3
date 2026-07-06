@@ -13,8 +13,8 @@ future versions. Learning-goal mapping and debriefing are not V0 requirements.
 - Priority: core/background.
 - Use: Provides the general didactic basis for aligning learning objectives,
   learning activities, and assessment evidence.
-- Wizard relevance: Supports the rule that every riddle should map to a learning
-  goal and that every learning goal needs gameplay evidence and reflection.
+- Wizard relevance: Useful for future educational-alignment work where riddles,
+  learning goals, gameplay evidence, and reflection are modeled explicitly.
 
 ### Clarke et al. 2017 - EscapED
 
@@ -72,9 +72,9 @@ future versions. Learning-goal mapping and debriefing are not V0 requirements.
 - Priority: core.
 - Use: Learner-centered design-thinking framework for educational escape-room
   creation.
-- Wizard relevance: Supports wizard steps for learner empathy, objectives,
-  constraints, narrative, puzzle design, briefing/debriefing, prototyping, and
-  playtesting.
+- Wizard relevance: Useful comparison for a structured authoring flow around
+  learner context, objectives, constraints, narrative, puzzle design,
+  briefing/debriefing, prototyping, and playtesting.
 
 ### Guigon et al. 2018 - SEGAM
 
@@ -107,8 +107,8 @@ future versions. Learning-goal mapping and debriefing are not V0 requirements.
 - DOI: <https://doi.org/10.1007/978-3-030-11548-7_23>
 - Priority: core/secondary.
 - Use: Treats debriefing as a bridge from gameplay to formal learning.
-- Wizard relevance: Supports requiring reflection/debrief prompts in the DEER
-  configuration.
+- Wizard relevance: Supports later reflection/debriefing concepts outside
+  Wizard V0.
 
 ### Fanning and Gaba 2007 - Simulation-Based Debriefing
 
@@ -129,8 +129,8 @@ future versions. Learning-goal mapping and debriefing are not V0 requirements.
 - Priority: background/secondary.
 - Use: Systematic review and meta-analysis on debriefing for
   technology-enhanced simulation.
-- Wizard relevance: Provides broader methodological support for using
-  debriefing prompts as part of the generated evaluation package.
+- Wizard relevance: Provides broader methodological context for later
+  evaluation-focused packages outside Wizard V0.
 
 ### Nicholson 2015 - Meaningful Gamification
 

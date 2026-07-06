@@ -1,31 +1,32 @@
 # Teacher Workflow V0
 
 Status: funktionaler UI-Contract für den Wizard-Prototyp
-Stand: 02.07.2026
+Stand: 06.07.2026
 
 ## Zweck
 
 Dieses Dokument beschreibt nicht das visuelle Design. Es legt fest, wann,
 wo und welche Informationen Lehrende im Wizard angeben können und welche
-Validierungen wann greifen müssen.
+Validierungen greifen.
 
-Der UI-Designer hat Freiheit bei Layout, Komponenten, Navigation, Icons,
-Microcopy und Interaktionsdetails. Fest sind nur:
+Festgelegt sind:
 
-- welche fachlichen Daten erfasst werden müssen,
-- welche Daten die UI automatisch ableitet,
-- welche Fehler blockieren,
-- wann der Paket-erstellen-Button erlaubt ist,
-- welche Bausteine im aktuellen Generator-Slice wirklich generierbar sind,
-- dass technische Interna wie Tokens, Petri-Netze und Generator-Actions nicht
-  als zentrale UI-Begriffe erscheinen.
+- fachliche Daten, die erfasst werden,
+- Daten, die die UI automatisch ableitet,
+- blockierende Fehler,
+- Bedingungen für den Paket-erstellen-Button,
+- Bausteine, die im aktuellen Generator-Slice generierbar sind,
+- technische Interna, die nicht zur Hauptsprache der UI werden.
+
+Gestaltung, Komponenten, Navigation, Icons, Microcopy und Interaktionsdetails
+bleiben frei.
 
 ## Beispiel-Workflow Aus Lehrenden-Sicht
 
-Eine Lehrkraft möchte einen kleinen Escape Room erstellen:
+Eine Lehrkraft erstellt einen kleinen Escape Room:
 
 1. Sie legt Titel, Sprache, Zielgruppe, Spielerzahl und Zeitlimit fest.
-2. Sie beschreibt die Spielrolle, Ausgangslage und Mission.
+2. Sie beschreibt Spielrolle, Ausgangslage und Mission.
 3. Sie fügt Rätselbausteine hinzu, z. B. Computer-Login, E-Mail-Auswahl,
    Keypad und finale Tür.
 4. Die UI zeigt daraus entstehende Oberflächen wie Computer, Keypad und Tür.
@@ -35,9 +36,8 @@ Eine Lehrkraft möchte einen kleinen Escape Room erstellen:
 8. Die UI prüft den Raum auf blockierende Fehler.
 9. Wenn keine blockierenden Fehler existieren, erstellt und lädt sie ein
    `deer.zip` herunter.
-10. Danach kann dieses Paket geteilt oder für V0 manuell an den Generator
-    übergeben werden. Import bestehender `deer.zip`-Pakete ist nicht Teil von
-    V0. Bequemere One-Click-Verpackung folgt später.
+10. Danach kann dieses Paket geteilt oder manuell an den Generator übergeben
+    werden.
 
 ## Workflow-Schritte
 
@@ -62,7 +62,7 @@ Anzeigen:
 Validierung:
 
 - keine eigene Validierung,
-- aggregiert nur den Zustand der anderen Schritte.
+- aggregiert den Zustand der anderen Schritte.
 
 ### 2. Rahmen
 
@@ -84,17 +84,16 @@ Validierung:
 - Spielerzahl: `1 <= min <= max`.
 - Zeitlimit muss eine positive Zahl sein.
 - Zeitmodus ist `hard` oder `soft`.
-- Sprache ist für V0 standardmäßig `de-DE`. Weitere Sprachen können später
-  folgen.
+- Sprache ist für V0 `de-DE`.
 
 Blockiert Paket-Erstellung, wenn:
 
-- Pflichtfeld fehlt,
-- Zahlenbereich ungültig ist.
+- ein Pflichtfeld fehlt,
+- ein Zahlenbereich ungültig ist.
 
 Nicht als Eingabe sichtbar:
 
-- empfohlene Spielerzahl,
+- separate Empfehlung zur Spielerzahl,
 - Kooperationsmodus; V0 ist immer kooperativ.
 
 ### 3. Szenario
@@ -120,11 +119,11 @@ Optionale Angaben:
 Validierung:
 
 - Pflichttexte dürfen nicht leer sein.
-- Mission sollte ein klares Spielziel enthalten.
+- Mission enthält ein klares Spielziel.
 
 Blockiert Paket-Erstellung, wenn:
 
-- Pflichttext fehlt.
+- ein Pflichttext fehlt.
 
 Warnungen:
 
@@ -159,34 +158,33 @@ Abgeleitete Oberflächen:
 - Fragmentbereich,
 - Control Panel.
 
-UI-Regel:
+UI-Regeln:
 
 - Lehrende legen nicht zuerst eine technische Slot-Liste an.
 - Wenn ein Baustein eine Oberfläche braucht, erzeugt die UI sie automatisch
   oder bietet eine passende vorhandene Oberfläche zur Auswahl an.
 - Intern schreibt die UI diese Oberflächen in das `surfaces`-Array der
   `deer.json`; Rätselparameter referenzieren sie über `surfaceId`.
-- Wenn mehrere Oberflächen desselben Typs existieren, muss die UI eine
-  eindeutige Auswahl oder Benennung erlauben.
+- Wenn mehrere Oberflächen desselben Typs existieren, erlaubt die UI eine
+  eindeutige Auswahl oder Benennung.
 
 Validierung:
 
-- Jeder Baustein muss eine kompatible Oberfläche haben.
-- Die UI darf keine Oberflächen anbieten, die zum Baustein nicht passen.
-- Wiederverwendete Oberflächen, z. B. Computer, müssen eindeutig referenziert
-  werden.
+- Jeder Baustein hat eine kompatible Oberfläche.
+- Die UI bietet nur Oberflächen an, die zum Baustein passen.
+- Wiederverwendete Oberflächen, z. B. Computer, werden eindeutig referenziert.
 
 Blockiert Paket-Erstellung, wenn:
 
 - ein Baustein keine benötigte Oberfläche hat,
-- eine inkompatible Baustein-/Oberflächen-Kombination entsteht.
+- eine inkompatible Baustein-/Oberflächen-Kombination entsteht,
 - ein Baustein im aktuellen Generator-Slice noch nicht generierbar ist.
 
 ### 5. Rätselablauf
 
 Zweck: Festlegen, welche Rätsel in welcher Reihenfolge gelöst werden müssen.
 
-Empfohlenes fachliches Modell:
+Fachliches Modell:
 
 - Der Ablauf besteht aus Gruppen.
 - Gruppen werden nacheinander gelöst.
@@ -195,9 +193,9 @@ Empfohlenes fachliches Modell:
 - Die nächste Gruppe wird erst relevant, wenn alle Progressionsrätsel der
   vorherigen Gruppe lösbar abgeschlossen werden können.
 
-Der UI-Designer kann das als Liste, Timeline, Board, Kartenansicht oder Canvas
-umsetzen. Wichtig ist nur, dass daraus eindeutig eine gültige Reihenfolge mit
-optionalen Parallelgruppen abgeleitet werden kann.
+Die Darstellung ist frei: Liste, Timeline, Board, Kartenansicht oder Canvas
+sind möglich, solange daraus eindeutig eine gültige Reihenfolge mit optionalen
+Parallelgruppen abgeleitet werden kann.
 
 Mindestoperationen:
 
@@ -209,7 +207,7 @@ Mindestoperationen:
 - Parallelgruppe erstellen,
 - Parallelgruppe wieder auflösen.
 
-Nicht erforderlich für V0:
+V0 erzeugt hier nicht:
 
 - frei gezogene beliebige Graphkanten,
 - optionale Rätselpfade,
@@ -220,15 +218,15 @@ Validierung:
 
 - Es gibt mindestens ein Progressionsrätsel.
 - Jedes Progressionsrätsel liegt in genau einer Ablaufgruppe.
-- Keine leeren Gruppen.
-- Keine Zyklen.
+- Es gibt keine leeren Gruppen.
+- Es gibt keine Zyklen.
 - Kein Progressionsrätsel ist unerreichbar.
 - Kein Progressionsrätsel kann übersprungen werden.
 - Der Endzustand ist erreichbar.
 
 Blockiert Paket-Erstellung, wenn:
 
-- Softlock möglich ist,
+- ein Softlock möglich ist,
 - ein Rätsel unerreichbar ist,
 - ein Progressionsrätsel übersprungen werden kann,
 - eine Abhängigkeit zyklisch oder unlösbar ist,
@@ -255,7 +253,7 @@ Typ-spezifische Pflichtangaben:
 | Stromschalter | Zielobjekt, Bestätigungstext, Erfolgstext |
 | Fund | Fundtyp, Fundort, Reward oder Ressource |
 | Computer-Login | Felder, Labels, erwartete Werte |
-| E-Mail-Auswahl | Optionen, Inhalte, genau richtige Option |
+| E-Mail-Auswahl | Optionen, Inhalte, genau eine richtige Option |
 | Decoding-Eingabe | kodierter Wert, erwartete Antwort, Decoding-Schritte |
 | Keypad | Zahlencode, maximale Länge, Erfolg |
 | USB verwenden | Kandidaten-Items, korrektes Item, Fehlerverhalten |
@@ -264,52 +262,47 @@ Typ-spezifische Pflichtangaben:
 
 Validierung:
 
-- Typ-spezifische Pflichtfelder müssen vorhanden sein.
-- Kontrollierte Auswahlfelder dürfen nur valide Optionen anbieten.
-- Lösungsfelder müssen zum Eingabetyp passen, z. B. nur Ziffern beim Keypad.
-- Retry muss möglich bleiben, wenn eine falsche Eingabe oder Auswahl nicht
-  sofort beendet.
-- Erfolg/Freischaltung darf keinen unlösbaren Ablauf erzeugen.
+- Typ-spezifische Pflichtfelder sind vorhanden.
+- Kontrollierte Auswahlfelder enthalten nur valide Optionen.
+- Lösungsfelder passen zum Eingabetyp, z. B. nur Ziffern beim Keypad.
+- Retry bleibt möglich, wenn eine falsche Eingabe oder Auswahl nicht sofort
+  beendet.
+- Erfolg/Freischaltung erzeugt keinen unlösbaren Ablauf.
 
 Blockiert Paket-Erstellung, wenn:
 
 - Pflichtparameter fehlen,
-- Lösung nicht zum Eingabetyp passt,
+- eine Lösung nicht zum Eingabetyp passt,
 - Erfolg/Freischaltung mit dem Ablauf unvereinbar ist.
 
 ### 7. Inhalte, Assets Und Hinweise
 
 Zweck: Texte, Bilder, Audio und optionale Hilfen zentral verwalten.
 
-Erlaubt in V0:
+V0-Eingaben:
 
 - Texte direkt im Wizard,
 - Bilder als Upload,
 - Audio als Upload,
 - optionale Hinweise pro Rätsel.
 
-Nicht erlaubt in V0:
-
-- Custom-Themes,
-- Tilesets,
-- Sprites,
-- UI-Skins,
-- beliebige Office- oder PDF-Dateien als Runtime-Dokumente.
+Theme-, Tileset-, Sprite-, UI-Skin- und Office/PDF-Uploads sind keine
+Runtime-Assets dieses V0-Flows.
 
 Validierung:
 
-- Referenzierte Assets müssen existieren.
-- Asset-Typ muss unterstützt sein.
-- Required Assets müssen vorhanden sein.
+- Referenzierte Assets existieren.
+- Asset-Typen werden unterstützt.
+- Required Assets sind vorhanden.
 - Hinweise sind optional, aber als leeres Array modellierbar.
-- Hint-Freischaltungen müssen auf existierende Rätsel, Ressourcen oder
-  Oberflächen verweisen.
+- Hint-Freischaltungen verweisen auf existierende Rätsel, Ressourcen oder
+  Oberflächen.
 
 Blockiert Paket-Erstellung, wenn:
 
-- required Asset fehlt,
-- Asset nicht unterstützt wird,
-- ein Rätsel auf eine nicht vorhandene Ressource verweist.
+- ein required Asset fehlt,
+- ein Asset nicht unterstützt wird,
+- ein Rätsel auf eine nicht vorhandene Ressource verweist,
 - ein Hint auf eine nicht vorhandene Freischaltbedingung verweist.
 
 Warnungen:
@@ -383,7 +376,8 @@ führen kann:
 - ungewollt überspringbares Progressionsrätsel,
 - Softlock,
 - zyklische oder unlösbare Abhängigkeit,
-- nicht erreichbarer Endzustand.
+- nicht erreichbarer Endzustand,
+- nicht generierbarer Baustein im aktuellen Generator-Slice.
 
 ### Warnung
 
@@ -397,7 +391,7 @@ Warnungen helfen bei Qualität, blockieren aber nicht:
 
 ## Automatisch Abgeleitete Daten
 
-Die UI darf und sollte technische Daten automatisch erzeugen:
+Die UI erzeugt technische Daten automatisch:
 
 - stabile IDs,
 - `surfaces` aus den gewählten Bausteinen,
@@ -407,12 +401,7 @@ Die UI darf und sollte technische Daten automatisch erzeugen:
 - leere Arrays für `resources`, `hints` und `assetIds`,
 - Standardwerte für Theme und Levelanzahl.
 
-Nicht automatisch abgeleitet oder unterstützt in V0:
-
-- Import eines bestehenden `deer.zip`,
-- Wiederöffnen eines heruntergeladenen Pakets als Wizard-Entwurf.
-
-Lehrende sollen diese Werte nicht direkt bearbeiten müssen.
+Lehrende bearbeiten diese Werte nicht direkt.
 
 ## Gestaltungsspielraum Für Die UI
 
@@ -421,13 +410,13 @@ Frei wählbar:
 - Layout und visuelle Hierarchie,
 - konkrete Komponenten,
 - Drag-and-drop oder Buttons,
-- Karten-, Listen-, Board- oder Canvas-Darstellung,
+- Listen-, Board-, Timeline- oder Canvas-Darstellung,
 - Icons, Farben und Microcopy,
 - ob Schritte strikt nacheinander oder frei anwählbar sind.
 
-Nicht frei:
+Fest:
 
-- Paket-Erstellung darf nur bei gültigem Preflight aktiv sein.
-- Technische Interna dürfen nicht zur Hauptsprache der UI werden.
-- Ablauf muss in eine valide `deer.json` übersetzbar sein.
-- V0 darf keine optionalen Progressionsrätsel oder alternative Enden erzeugen.
+- Paket-Erstellung ist nur bei gültigem Preflight aktiv.
+- Technische Interna werden nicht zur Hauptsprache der UI.
+- Der Ablauf muss in eine valide `deer.json` übersetzbar sein.
+- V0 erzeugt keine optionalen Progressionsrätsel oder alternative Enden.

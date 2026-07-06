@@ -14,10 +14,10 @@ remain useful for the later paper and future versions.
    model-driven design, procedural generation, and mixed-initiative creation.
 3. `03_evaluation_and_methodology.md` covers evaluation, learning analytics,
    meta-analysis, and design-science research methodology.
-4. `04_local_prior_work.md` covers the local Dungeon evaluation thesis and how
-   its automated evaluation logic transfers to the wizard.
+4. `04_local_prior_work.md` covers a prior Dungeon evaluation thesis as context
+   for later evaluation work.
 5. `05_masterarbeit_paper_kandidaten.md` lists additional candidates from the
-   local Masterarbeit literature folders.
+   Masterarbeit literature review.
 6. `06_web_scout_additions.md` records targeted web-confirmed additions around
    platform, dashboard, LMS, and no-code authoring sources.
 7. `sources.bib` contains BibTeX entries for the scientific source set.

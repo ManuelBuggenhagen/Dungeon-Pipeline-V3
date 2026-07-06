@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dungeon.local/schemas/deer.schema.json",
   "title": "DEER Authoring Configuration",
-  "description": "First draft schema for the editable wizard authoring file. Semantic cross-reference checks remain part of the generator validator.",
+  "description": "Schema for the editable wizard authoring file. Semantic cross-reference checks remain part of the Wizard and generator validators.",
   "type": "object",
   "additionalProperties": false,
   "required": [

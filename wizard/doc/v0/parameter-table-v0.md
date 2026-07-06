@@ -1,25 +1,25 @@
-# DEER Parameter Table V0 Draft
+# DEER Parameter Table V0
 
 Stand: 02.07.2026
-Status: V0-Arbeitsgrundlage für UI und Generator
+Status: V0-Detailtabelle für typ-spezifische Parameter
 
 ## Ziel
 
 Diese Tabelle beschreibt, welche Parameter der Wizard für die erste
-The-Last-Hour-abgeleitete Bausteinpalette erfassen sollte. Sie ist Teil des
-aktuellen UI-/Generator-Contracts. Das JSON Schema prüft noch nicht jedes
-typ-spezifische Detail hart; UI und Generator müssen diese Tabelle für die
-V0-Validierung berücksichtigen.
+The-Last-Hour-abgeleitete Bausteinpalette erfassen sollte. Sie ergänzt
+[`deer-json-spec.md`](deer-json-spec.md) um die typ-spezifischen Details. Das
+JSON Schema prüft noch nicht jedes Detail hart; UI und Generator müssen diese
+Tabelle für die V0-Validierung berücksichtigen.
 
 Grundregel:
 
 - Der Wizard fragt fachliche Inhalte und notwendige Entscheidungen ab.
 - Oberflächen entstehen aus den gewählten Bausteinen und werden in der UI
   fachlich benannt.
-- Der spätere Generator wählt konkrete Positionen, Slot-Instanzen und
+- Der manuell gestartete Generator wählt konkrete Positionen, Slot-Instanzen und
   technische Runtime-Details.
-- Der Client validiert vor der Paket-Erstellung; der Java-Generator validiert erneut
-  als Sicherheitsnetz.
+- Der Client validiert vor der Paket-Erstellung; der Java-Generator validiert
+  erneut als Sicherheitsnetz.
 
 ## Gemeinsame Riddle-Felder
 
@@ -45,20 +45,20 @@ Jedes Rätsel braucht außerhalb von `parameters`:
 
 Diese Felder können für alle Typen sinnvoll sein:
 
-| Feld | Pflicht | Vorschlag |
+| Feld | Pflicht | Bedeutung |
 |---|---:|---|
 | `surfaceId` | ja, wenn eine Oberfläche genutzt wird | Referenz auf `surfaces[].id`, z. B. `s_main_computer`. |
 | `slotType` | ja | Gewünschter Slot-Typ, z. B. `computer_slot`, `keypad_slot`. |
 | `successEffect` | ja | Kontrollierter Effekt nach Erfolg, z. B. `open_surface` auf eine Tür-Surface. |
 | `successFeedback` | nein | Kurzer sichtbarer Erfolgstext. |
 | `wrongFeedback` | nein | Kurzer Fehlertext bei falscher Eingabe/Auswahl. |
-| `retryPolicy` | nein | Default `infinite_retry`; V0 sollte keine Progression dauerhaft blockieren. |
+| `retryPolicy` | nein | Standard `infinite_retry`; V0 sollte keine Progression dauerhaft blockieren. |
 
 Der Wizard leitet benötigte Oberflächen und Slot-Typen aus den gewählten
 Bausteinen ab. Lehrende sollen die Oberflächen fachlich sehen und benennen
 können, aber nicht zuerst eine technische Slot-Liste bauen müssen.
 
-Der spätere Generator darf `slotType` weiter verfeinern, aber der Wizard sollte
+Der Generator darf `slotType` weiter verfeinern, aber der Wizard sollte
 sichtbar machen, wenn ein Rätsel keinen kompatiblen Slot im geplanten Raum
 findet.
 
@@ -197,7 +197,7 @@ Optional:
 
 - `minLength`
 - `showDigitCount`
-- `acceptedCharacters`, default `digits`
+- `acceptedCharacters`, Standard `digits`
 
 ```json
 {
@@ -226,8 +226,8 @@ Feldstruktur:
 | `id` | ja | `username`, `password`, etc. |
 | `label` | ja | Sichtbarer Feldname. |
 | `answer` | ja | Erwarteter Wert. |
-| `secret` | nein | Passwortmodus, default `false`. |
-| `caseSensitive` | nein | Default `false`. |
+| `secret` | nein | Passwortmodus, Standard `false`. |
+| `caseSensitive` | nein | Standard `false`. |
 
 ```json
 {
@@ -301,10 +301,10 @@ Pflicht in `parameters`:
 
 Optionale Fehlerpolitik:
 
-- `wrongChoicePolicy`: default `feedback_retry`
+- `wrongChoicePolicy`: Standard `feedback_retry`
 - `wrongChoiceFeedback`
 
-V0-Empfehlung: falsche Optionen geben Feedback und erlauben Retry. Keine
+V0-Regel: falsche Optionen geben Feedback und erlauben Retry. Keine
 dauerhafte Infektion, kein Progressionsverlust.
 
 Für The Last Hour sollte `choice.email_list` nach Möglichkeit in den Computer
@@ -575,9 +575,7 @@ nicht die Reihenfolge der späteren Runtime-Implementierung.
 | `assembly.image_fragments` | ja | finales Papierfragment-Bild. |
 | `control_panel` | ja | Vent, AC, finale Tür. |
 
-## Entscheidungen Und Nachgelagerte Fragen
-
-Entschieden:
+## Entscheidungen
 
 1. `surfaceId` bleibt dort relevant, wo mehrere Oberflächen möglich sind oder
    ein wiederverwendbares Objekt wie ein Computer adressiert wird.
@@ -586,9 +584,3 @@ Entschieden:
 3. `choice.email_list` soll nach Möglichkeit in den Computer integriert werden.
 4. Falsche USB-Sticks nutzen das The-Last-Hour-nahe Verhalten
    `unknown_device_shutdown_retry`, ohne Softlock.
-
-Nachgelagert:
-
-1. Ob `assembly.image_fragments` im ersten spielbaren Generator schon echte
-   Drag-/Snap-Interaktion nutzt oder nur das bestehende Puzzle-/Item-System.
-2. Wie stark `control_panel` in der Runtime frei konfigurierbar wird.

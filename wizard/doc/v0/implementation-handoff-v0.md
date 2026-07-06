@@ -1,110 +1,50 @@
 # Implementation Handoff V0
 
-Status: Arbeitsgrundlage für UI- und Generator-Start
-Stand: 02.07.2026
-
 ## Ziel
 
-Dieses Dokument ist die Übergabe an die Kollegen, die den Wizard und den
-Generator parallel umsetzen. Es ersetzt keine Detailplanung, fixiert aber den
-V0-Rahmen so weit, dass beide Seiten starten können.
+V0 ist eine schlichte Wizard-Web-App für nicht technische Lehrende. Die App
+erfasst einen einfachen Escape-Room-Entwurf, erzeugt daraus eine validierte
+`deer.json` und packt diese mit referenzierten Assets als `deer.zip`.
 
-Leitprinzip für V0:
-
-```text
-klein starten -> sauber validieren -> leicht iterierbar bleiben
-```
-
-V0 darf weniger Features haben, solange das Datenmodell und die UI-Erwartungen
-später erweitert werden können, ohne den Grundvertrag neu zu bauen.
+`deer.json` ist der Contract zwischen UI und Generator. `deer.zip` ist das
+teilbare Authoring-Paket für den manuellen Generatorlauf, nicht der
+Generator-Output.
 
 ## V0-Produktfluss
 
 ```text
 Lehrender öffnet Wizard-Web-App
--> füllt Rahmen, Szenario, Rätsel, Inhalte und Hinweise aus
--> Wizard erzeugt intern deer.json
--> Wizard validiert blockierende Fehler
--> Lehrender erstellt/downloadet ein deer.zip
--> deer.zip enthält deer.json und referenzierte Assets
--> Java-Generator wird für V0 manuell mit diesem Paket/Projekt gestartet
--> Generator validiert erneut und erzeugt das Dungeon-/Room-Paket
+-> erfasst Rahmen, Szenario, Rätsel, Inhalte, Assets und Hinweise
+-> Wizard erzeugt `deer.json`
+-> Wizard validiert Schema, Referenzen und blockierende Fachregeln
+-> Wizard erstellt ein `deer.zip` mit `deer.json` und Assets
+-> Lehrender gibt `deer.zip` an den Java-Generator weiter
+-> Generator wird manuell gestartet, validiert erneut und erzeugt das Room-Paket
 ```
 
-Nicht in V0:
+## Contract-Dateien
 
-- spielbare Preview,
-- Neu-Generieren-Button,
-- Zwischeneditor nach dem Generator,
-- automatischer UI-Aufruf des Java-Generators,
-- lokaler Backend-Service oder offizieller CLI-Wrapper,
-- mehrere Themes,
-- Lernziel-/Evaluations-/Debriefing-/Telemetrie-Funktionen,
-- frei editierbarer technischer Graph für Lehrende,
-- Generator-Seed in `deer.json`.
+Dieses Handoff wiederholt keine Feldlisten. Maßgeblich sind:
 
-## Gemeinsamer Contract
+- `wizard/doc/v0/deer.schema.json`
+- `wizard/doc/v0/deer-json-spec.md`
+- `wizard/doc/v0/parameter-table-v0.md`
+- `wizard/doc/v0/examples/deer.example.json`
+- `wizard/doc/v0/room-package-format.md`
 
-Die interne `deer.json` ist der Contract zwischen Wizard-UI und Generator.
+Ergänzende Arbeitsreferenzen:
 
-Aktuelle Contract-Dateien:
+- `wizard/doc/v0/teacher-workflow-v0.md`
+- `wizard/doc/v0/wizard-ui-flow-v0.md`
+- `wizard/doc/v0/the-last-hour-interaction-catalog.md`
 
-- `deer.schema.json`
-- `deer-json-spec.md`
-- `examples/deer.example.json`
-- `parameter-table-v0.md`
+The Last Hour liefert verfügbare Bausteine und Assets. Es ist keine Vorlage für
+den V0-Wizard-Flow.
 
-Wichtige Contract-Regeln:
+## Erster Foundation-Slice
 
-- `formatVersion` bleibt für diesen Draft `0.1-draft`.
-- `deer.json` enthält kein `generation`-Objekt.
-- `metadata.author` ist optionaler String.
-- `session.playerCount` enthält nur `min` und `max`.
-- `session.time` enthält `limitMinutes` und `limitMode`.
-- `limitMode` ist `hard` oder `soft`.
-- V0 nutzt genau ein Standard-Theme.
-- `surfaces` ist das interne Register der Oberflächen, die die UI aus den
-  Bausteinen ableitet.
-- Rätselparameter referenzieren konkrete Oberflächen mit `surfaceId`.
-- Die UI zeigt keine Tokens, Petri-Netze oder Generator-Actions als
-  Hauptsprache.
-- Hints nutzen `severity` und optional `unlock`.
-- Hint-Unlock-Bedingungen müssen auf existierende Rätsel, Ressourcen,
-  Oberflächen oder interne Tokens zeigen.
-- Eigenständige Decoy-Rätsel sind nicht Teil von V0. Decoys dürfen als
-  Ressourcen, falsche Optionen oder falsche Items innerhalb eines echten
-  Rätsels vorkommen.
-- `successEffect` beschreibt intern, welcher kontrollierte Effekt nach einem
-  gelösten Rätsel passiert. Freitext-Effekte sind nicht erlaubt.
-- `deer.zip` wird in V0 als Download/teilbares Paket erstellt. Import
-  bestehender `deer.zip`-Pakete ist nicht Teil von V0.
-
-## Workspace-Struktur
-
-Für die Umsetzung ist `./wizard` der aktive Workspace. Die Konzeptdateien
-liegen unter `./wizard/doc`, damit der Root des Wizard-Workspaces frei für
-Web-App-Code, Paket-Ausgaben und spätere Generator-Anbindung bleibt.
-
-Empfohlene V0-Struktur:
-
-```text
-wizard/
-  doc/
-    README.md
-    v0/
-    research/
-  webapp/
-  packages/
-```
-
-## Empfohlener Erster Foundation-Slice
-
-Der erste technische Slice ist kein Wegwerf-PoC. Er soll klein genug sein, um UI
-und Generator früh end-to-end zu verbinden, aber schon die späteren
-Grundentscheidungen verwenden: `deer.json`, `deer.zip`, Validierung,
-Rätselgraph, Assets, `surfaces` und kontrollierte Effekte.
-
-Minimaler Slice:
+Der erste Slice verbindet UI und Generator end-to-end mit dem kleinsten
+nützlichen Raum:
 
 ```text
 Rahmen
@@ -115,176 +55,58 @@ Rahmen
 -> deer.zip erstellen
 ```
 
-Bausteine im ersten Slice:
+Unterstützte Bausteine:
 
 - `collection.single`
 - `input.numeric`
-- einfacher `successEffect`, z. B. Tür öffnen
-- optionale Hints ohne komplexe Unlock-Bedingungen
-- einfache Assets oder Textressourcen
+- kontrollierter `successEffect`, z. B. Tür öffnen
+- einfache Text- oder Bildassets
+- optionale Hinweise ohne komplexe Unlock-Bedingungen
 
-Warum dieser Slice:
-
-- deckt Eingabe, Ressource, Progression und Softlock-Validierung ab,
-- vermeidet Computer-/USB-/Assembly-Komplexität am Anfang,
-- prüft trotzdem den wichtigsten End-to-End-Pfad.
-
-Danach iterieren:
-
-1. Computer-Login und Computer-Oberfläche.
-2. Choice/E-Mail.
-3. USB-Item-Use.
-4. Control Panel.
-5. Assembly/Bildfragmente.
-6. erweiterte Hint-Unlock-Bedingungen.
-
-## Baustein-Support
-
-Die UI darf langfristig die komplette V0-Bausteinpalette darstellen. Für den
-produktiven Paket-Flow muss aber zwischen "sichtbar im Konzept" und
-"Generator-unterstützt" unterschieden werden.
-
-V0-Regel:
-
-```text
-Ein Entwurf darf nur als generator-fähiges Paket erstellt werden, wenn alle
-verwendeten Bausteine im aktuellen Generator-Slice unterstützt sind.
-```
-
-Noch nicht generator-fähige Bausteine dürfen im UI-Prototyp sichtbar sein,
-müssen aber deaktiviert oder klar markiert werden. Die UI muss den Grund nennen,
-z. B. "noch nicht im Generator unterstützt" oder "benötigt Computer-Surface,
-die im aktuellen Slice noch nicht verfügbar ist". Sonst entsteht für Lehrende
-der falsche Eindruck, dass jeder sichtbare Baustein bereits spielbar erzeugt
-werden kann.
+Der Slice prüft den vollständigen Pfad von Eingabe über Assets, Rätselgraph,
+Validierung und Packaging bis zum manuellen Generatorlauf.
 
 ## UI-Aufgaben
 
-Die UI muss nicht visuell fest vorgegeben werden. Layout, Komponenten,
-Navigation und Interaktionsdesign bleiben frei.
+Die UI verantwortet:
 
-Funktional muss die UI:
-
-- Wizard-Schritte aus `teacher-workflow-v0.md` abbilden,
+- Workflow aus `teacher-workflow-v0.md` und `wizard-ui-flow-v0.md` abbilden,
 - fachliche Eingaben erfassen,
-- technische Daten automatisch ableiten,
 - stabile IDs erzeugen,
-- `deer.json` intern erstellen,
-- Assets annehmen und referenzieren,
-- blockierende Fehler vor `deer.zip erstellen` anzeigen,
-- Warnungen anzeigen, aber nicht blockieren,
-- `deer.zip` für Teilen und manuellen Generatorlauf erstellen,
-- `deer.zip` als Download bereitstellen,
-- Speicherort und nächste manuelle Aktion anzeigen.
+- technische Strukturen wie `surfaces`, Referenzen und kontrollierte Effekte
+  ableiten,
+- `deer.json` nach Contract erzeugen,
+- Assets annehmen und im Paket referenzieren,
+- Schema- und Fachvalidierung vor dem Packaging ausführen,
+- blockierende Fehler sichtbar machen und `deer.zip` verhindern,
+- Warnungen sichtbar machen, ohne Packaging zu blockieren,
+- `deer.zip` mit `deer.json` und Assets als Download bereitstellen,
+- den manuellen nächsten Schritt für den Generator anzeigen.
 
-UI darf frei entscheiden:
-
-- Liste, Timeline, Board oder Canvas für den Ablauf,
-- Drag-and-drop oder Button-basierte Bedienung,
-- genaue Formulierungen,
-- Schritt-Navigation,
-- visuelle Statusanzeigen.
-
-UI darf nicht:
-
-- ungültige `deer.json` an den Generator schicken,
-- technische Tokens als Lehrenden-Hauptbegriff zeigen,
-- optionale Progressionspfade erzeugen,
-- den Paket-erstellen-Button trotz blockierender Fehler aktivieren,
-- eine Preview oder einen Neu-Generieren-Flow als V0-Pflicht einplanen.
+Nicht generatorfähige Bausteine bleiben deaktiviert oder klar als noch nicht
+paketierbar markiert.
 
 ## Generator-Aufgaben
 
-Der Generator konsumiert:
+Der Generator verantwortet:
 
-- interne `deer.json`,
-- referenzierte Assets,
-- ggf. feste Generator-Konfiguration aus Code oder separater Konfigurationsdatei.
-
-Der Generator erzeugt:
-
-- Runtime-Dateien,
-- ein fertiges Room-Paket auf Disk,
-- strukturierten Validierungs-/Fehlerbericht.
-
-Der Generator validiert erneut:
-
-- Schema-Version,
-- Pflichtfelder,
-- ID- und Referenzintegrität,
-- Asset-Existenz,
-- Baustein-Parameter,
-- Oberflächen-Kompatibilität,
-- Graph-Erreichbarkeit,
-- keine Softlocks,
-- keine ungewollten Skips,
-- Hint-Unlock-Referenzen.
+- `deer.zip` oder einen entpackten Projektordner lesen,
+- `deer.json` gegen Schema und Fachregeln validieren,
+- Asset-Existenz und Assettypen prüfen,
+- ID-, `surfaceId`-, Rätsel-, Hint- und Ressourcenreferenzen prüfen,
+- Baustein-Parameter und Oberflächen-Kompatibilität prüfen,
+- Graph-Erreichbarkeit, Endzustand und Softlock-Risiken prüfen,
+- den Foundation-Slice spielbar erzeugen,
+- ein Room-Paket auf Disk schreiben,
+- einen strukturierten Validierungsbericht ausgeben.
 
 Generator-Laufparameter wie Seed oder Layout-Profil gehören nicht in
-`deer.json`. Falls später gebraucht, kommen sie in eine separate
-Generator-Konfiguration oder einen CLI/API-Parameter.
-
-## Generator-Aufruf
-
-V0-Entscheidung:
-
-- Der Wizard startet den Java-Generator noch nicht automatisch.
-- Der Wizard erzeugt `deer.zip` als teilbares Authoring-/Content-Paket.
-- Import bestehender `deer.zip`-Pakete ist nicht Teil von V0.
-- Der Generator wird für V0 manuell mit diesem Paket oder dem entpackten
-  Projektordner aufgerufen.
-- Ein lokaler Backend-Service, offizieller CLI-Wrapper oder Desktop-Start ist
-  eine nächste Iteration.
-- Zusätzlich braucht Dungeon einen neuen Starter, der ein erzeugtes `deer.zip`
-  bzw. ein daraus abgeleitetes Room-Paket laden kann.
-
-Vorschlag für die nächste Iteration:
-
-```text
-generate
-  --input <projectRoot-or-deer.zip>
-  --output <outputDir>
-  --format room_zip
-  --report <outputDir>/validation/report.json
-```
-
-Stabile Exit-Codes:
-
-| Code | Bedeutung |
-|---:|---|
-| 0 | erfolgreich generiert |
-| 1 | Validierung fehlgeschlagen |
-| 2 | Generatorfehler |
-| 3 | Umgebung/Konfiguration fehlt oder ist ungültig |
-
-Erfolgsantwort:
-
-```json
-{
-  "success": true,
-  "artifact": {
-    "type": "room_zip",
-    "path": "D:/.../generated/room.zip"
-  },
-  "reportPath": "D:/.../generated/validation/report.json",
-  "issues": []
-}
-```
-
-Fehlerantwort:
-
-```json
-{
-  "success": false,
-  "artifact": null,
-  "reportPath": "D:/.../generated/validation/report.json",
-  "issues": []
-}
-```
+`deer.json`. Sie bleiben Code-/Konfigurations- oder Aufrufparameter.
 
 ## Validierungsmodell
 
-UI und Generator sollten dieselben Fehlerklassen verwenden.
+UI und Generator nutzen dieselben Issue-Klassen. Die UI blockiert das Packaging
+bei `error`; der Generator bleibt die autoritative zweite Validierungsstufe.
 
 Gemeinsames Issue-Format:
 
@@ -312,144 +134,30 @@ Regeln:
 - `entity` erleichtert UI-Markierung.
 - Warnungen haben `severity=warning` und `blocking=false`.
 
-Blockierend:
+Blockierend sind insbesondere fehlende Pflichtfelder, unbekannte Referenzen,
+fehlende oder ungültige Assets, nicht unterstützte Bausteine, inkompatible
+Oberflächen, unerreichbare Rätsel, überspringbare Progression, nicht erreichbare
+Endzustände, unlösbare Abhängigkeiten und ungültige Hint-Unlocks.
 
-- Pflichtfeld fehlt,
-- unbekannte ID-Referenz,
-- required Asset fehlt,
-- Assettyp nicht unterstützt,
-- unbekannter Bausteintyp,
-- fehlender Pflichtparameter für Baustein,
-- inkompatible Baustein-/Oberflächen-Kombination,
-- `surfaceId` zeigt auf keine existierende Surface,
-- unerreichbares Progressionsrätsel,
-- Progressionsrätsel kann übersprungen werden,
-- Endzustand nicht erreichbar,
-- zyklische oder unlösbare Abhängigkeit,
-- Hint-Unlock verweist auf nicht existierendes Ziel.
+Warnungen betreffen Qualität und Redaktionsrisiken, z. B. lange Texte, fehlende
+Hinweise, ungenutzte Assets oder schwache Story-Einbettung.
 
-Warnung:
+## Bewusst Nicht V0
 
-- lange Texte,
-- Rätsel ohne Hinweise,
-- ungenutzte Assets,
-- schwache Story-Einbettung,
-- geschätzte Dauer passt schlecht zum Zeitlimit.
+V0 umfasst nicht:
 
-## Packaging-Entscheidung
-
-V0 braucht ein teilbares Paket nach der Wizard-Validierung.
-
-Pragmatischer Startpunkt:
-
-- Erstes Wizard-Artefakt: `deer.zip`.
-- `deer.zip` enthält `deer.json` und Assets, wird als Download erzeugt und kann
-  geteilt oder vom Generator manuell konsumiert werden.
-- Bestehende `deer.zip`-Pakete wieder zu importieren ist kein V0-Ziel.
-- Der Generator-Output muss so gekapselt sein, dass später ohne Schema-Bruch
-  ein startbarer Ordner, eine runnable `.jar` oder eine `.exe` als weiterer
-  Packaging-Target ergänzt werden kann.
-- Für Lehrende ist später eine One-Click-Lösung besser, aber sie ist nicht
-  Voraussetzung für den ersten V0-Schnitt.
-
-Entscheidung für Implementierungsstart:
-
-```text
-V0 startet mit deer.zip als erstem Wizard-Paket. One-Click-Packaging und
-automatischer Generator-Aufruf sind spätere Iterationen und dürfen den
-deer.json-Contract nicht verändern.
-```
-
-## Entscheidungsfragen An Product/Team
-
-Diese Fragen sind die Punkte, die ich noch gezielt klären würde. Meine
-Default-Antwort steht jeweils dabei. Wenn niemand widerspricht, würde ich diese
-Defaults als V0-Arbeitsannahme verwenden.
-
-### Muss Vor Dem Implementierungsstart Geklärt Sein
-
-1. Wie startet die Web-App den Java-Generator?
-   - V0-Entscheidung: gar nicht automatisch. Die UI erstellt `deer.zip`; der
-     Generator wird manuell gestartet. CLI-/Backend-Wrapper folgt später.
-
-2. Was ist das erste Paket-Artefakt?
-   - V0-Entscheidung: `deer.zip`. Später kann daraus ein startbarer Ordner,
-     `.jar` oder `.exe` werden.
-
-3. Welche Bausteine müssen im ersten End-to-End-Slice wirklich spielbar sein?
-   - Empfehlung: `collection.single`, `input.numeric`, einfache Türaktion.
-
-4. Welche Bausteine dürfen in der UI sichtbar sein, obwohl der Generator sie
-   noch nicht voll unterstützt?
-   - Default: Im UI-Konzept dürfen alle V0-Bausteine sichtbar sein. Der
-     Paket-erstellen-Button darf aber nur für generator-fähige Bausteine aktiv
-     werden. Noch nicht unterstützte Bausteine brauchen Feature-Flags oder eine
-     klare Markierung mit Begründung.
-
-5. Wie wird ein Wizard-Entwurf gespeichert und wieder geöffnet?
-   - V0-Entscheidung: `deer.zip` wird erstellt/downloadet. Import bestehender
-     `deer.zip`-Pakete ist nicht Teil von V0. Lokal entsteht ein Projektordner
-     im Wizard-Workspace, aber die sichtbare Übergabe ist der Download.
-
-6. Wie sieht das Generator-Fehlerformat aus?
-   - Default: strukturierte Fehler mit `severity`, `code`, `message`, `path`
-     und optional `riddleId`, `assetId`, `nodeId`.
-
-7. Was ist `successEffect`?
-   - Default: ein interner, kontrollierter Effekt nach erfolgreichem Rätsel,
-     nicht UI-Freitext. Die UI zeigt fachlich "Tür öffnen"; intern steht z. B.
-     `{ "type": "open_surface", "surfaceId": "s_storage_door" }`.
-
-8. Unterstützt V0 mehrere Computer/Keypads oder startet der Generator mit je
-   einer Oberfläche pro Typ?
-   - Default: Datenmodell und UI dürfen mehrere Oberflächen ausdrücken. Der
-     erste Generator-Slice darf je Typ mit einer Oberfläche starten, solange
-     die UI das nicht als voll unterstützt verkauft.
-
-### Kann Während V0 Iteriert Werden
-
-9. Wie streng soll das JSON Schema typ-spezifische `parameters` prüfen?
-   - Default: Schema prüft Grundstruktur und einfache Typen. Generator und UI
-     prüfen zunächst die tieferen Bausteinregeln. Nach dem ersten Slice kann
-     das Schema pro Baustein verschärft werden.
-
-10. Was bedeutet `time.limitMode=soft` im ersten Generator?
-    - Default: In V0 speichern und validieren, Runtime-Effekt aber minimal
-      halten. Stärkere Hinweise nach Ablauf können später folgen.
-
-11. Wie werden Hint-Unlock-Events technisch gemappt?
-    - Default: Die UI bietet fachliche Bedingungen an. Der Generator mappt sie
-      auf Petri-Net-Places/Tokens oder Runtime-Events.
-
-12. Wie streng soll die UI Story-Qualität bewerten?
-    - Default: Nur Warnungen, keine Blocker.
-
-13. Wann gilt ein Progressionsrätsel als überspringbar?
-    - Empfehlung: Wenn ein späterer erforderlicher Zustand erreichbar ist,
-      ohne dass dieses Rätsel gelöst wurde.
-
-### Kann Sicher Nach V0 Warten
-
-Diese Punkte müssen nicht gelöst sein, bevor UI und Generator starten:
-
-- One-Click `.exe` oder Installer,
-- automatischer UI-Aufruf des Java-Generators,
-- offizieller CLI-/Backend-Wrapper,
 - spielbare Preview,
-- expliziter Neu-Generieren-Flow,
-- mehrere Themes,
-- Custom-Themes/Tilesets/Sprites/UI-Skins,
-- Lernziel-, Evaluation-, Debriefing- oder Telemetrie-Funktionen,
-- frei editierbarer technischer Graph für Lehrende.
+- Regenerate- oder Neu-Generieren-Flow,
+- automatischer UI-Aufruf des Java-Generators,
+- lokaler Backend-Service oder offizieller CLI-Wrapper,
+- Import bestehender `deer.zip`-Pakete,
+- mehrere Themes oder Custom-Themes,
+- frei editierbarer technischer Graph für Lehrende,
+- Lernziel-, Evaluations-, Debriefing- oder Telemetrie-Funktionen,
+- The Last Hour als kopierte Raumvorlage.
 
-## Startkriterium Für Umsetzung
+## Implementierungsstart
 
-UI und Generator können starten, wenn:
-
-- `deer.schema.json` als V0-Contract akzeptiert ist,
-- `surfaces`/`surfaceId` als internes Oberflächenmodell akzeptiert sind,
-- erster End-to-End-Slice festgelegt ist,
-- klar ist, welche Bausteine im ersten Slice wirklich generierbar sind,
-- erstes Output-Format entschieden ist,
-- Validierungsfehlerformat grob entschieden ist,
-- die erste kontrollierte `successEffect`-Struktur festgelegt ist.
+UI und Generator starten mit demselben Schema, demselben Issue-Format und dem
+Foundation-Slice. Weitere Bausteine folgen erst nach expliziter
+Generator-Unterstützung.

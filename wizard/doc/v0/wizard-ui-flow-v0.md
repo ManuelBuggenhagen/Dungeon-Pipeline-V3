@@ -1,27 +1,24 @@
-# Wizard UI Flow V0 Draft
+# Wizard UI Flow V0
 
-Stand: 02.07.2026
-Status: UI- und Eingabevorschlag zur Diskussion
+Stand: 06.07.2026
+Status: UI-Contract für Schritte, Eingaben, Validierung und Export
 
 ## Ziel
 
-Dieses Dokument beschreibt, wie der Wizard für Lehrende aussehen soll und
-welche Angaben in V0 wirklich gemacht werden müssen. Generator-Details,
-Petri-Netze, Tokens und technische Runtime-Interna sollen in der UI nicht im
-Vordergrund stehen.
+Dieses Dokument beschreibt den sichtbaren Authoring-Flow für Lehrende. Es legt
+Schritte, Eingaben, Validierungszeitpunkte, deaktivierte Zustände und den
+Export von `deer.zip` fest. Es ist keine Layout-Vorgabe.
 
-Der konkrete Lehrenden-Workflow als UI-Contract steht in
-[`teacher-workflow-v0.md`](teacher-workflow-v0.md). Dieses Dokument hier bleibt
-die kompakte Schrittübersicht.
-
-Der Wizard soll Lehrende durch eine strukturierte Authoring-Oberfläche führen:
+Der detaillierte Lehrenden-Workflow steht in
+[`teacher-workflow-v0.md`](teacher-workflow-v0.md). Dieses Dokument bleibt die
+kompakte Schrittübersicht.
 
 ```text
 Rahmen festlegen
 -> Szenario beschreiben
--> Rätselbausteine und daraus entstehende Oberflächen planen
+-> Bausteine wählen und Oberflächen ableiten
 -> Rätselablauf konfigurieren
--> Inhalte, Assets und Hinweise ergänzen
+-> Rätsel, Inhalte, Assets und Hinweise ergänzen
 -> Validieren und deer.zip herunterladen
 ```
 
@@ -29,29 +26,19 @@ Rahmen festlegen
 
 - Der Wizard ist eine separate Browser-/Standalone-Oberfläche.
 - Lehrende bearbeiten keine JSON-Datei direkt.
-- Technische Begriffe wie Token, Petri-Netz oder Generator-Action werden in der
-  UI durch fachliche Begriffe ersetzt.
-- Der Paket-erstellen-Button ist erst aktiv, wenn der Client-Preflight
-  gültig ist.
-- Fehler werden am betroffenen Schritt, Rätsel oder Feld angezeigt.
-- Warnungen dürfen sichtbar bleiben, blockieren aber nicht.
-- V0 nutzt ein Standard-Theme; Custom-Themes, Tilesets, Sprites und UI-Skins
-  werden nicht abgefragt.
-- V0 fragt keine Lernziele, Evaluation, Debriefing, Telemetrie oder
-  Pre-/Post-Tests ab.
-- Der Wizard startet ohne vorausgewählten Raum. Lehrende bauen den Escape Room
-  von Grund auf neu.
-- V0 bietet nur die aktuell vorhandenen, aus The Last Hour ableitbaren
-  Spiel-Elemente als Bausteine an.
-- Der UI-Prototyp darf Bausteine zeigen, die im Konzept vorgesehen sind. Der
-  Paket-Flow darf aber nur aktiv werden, wenn alle verwendeten Bausteine vom
-  aktuellen Generator-Slice unterstützt werden.
-- Deaktivierte Bausteine müssen sichtbar begründen, warum sie nicht nutzbar
-  sind.
+- Technische Begriffe wie Token, Petri-Netz oder Generator-Action erscheinen
+  nicht als zentrale UI-Begriffe.
+- Jeder Schritt hat einen Status: `leer`, `unvollständig`, `gültig`,
+  `Warnung` oder `Fehler`.
+- Die Paket-Erstellung ist deaktiviert, bis der Client-Preflight gültig ist.
+- Fehler erscheinen am betroffenen Schritt, Rätsel oder Feld.
+- Warnungen bleiben sichtbar und blockieren nicht.
+- V0 startet ohne vorausgewählte Raumstruktur.
+- The Last Hour liefert verfügbare Bausteine und Assets, aber keine Vorlage.
+- Bausteine oder Optionen, die im aktuellen Generator-Slice nicht generierbar
+  sind, erscheinen deaktiviert mit sichtbarem Grund.
 
-## Hauptnavigation
-
-Empfohlene Schritte:
+## Schritte
 
 1. **Übersicht**
 2. **Rahmen**
@@ -61,14 +48,6 @@ Empfohlene Schritte:
 6. **Rätsel bearbeiten**
 7. **Inhalte & Assets**
 8. **Prüfen & Paket Erstellen**
-
-Die linke Navigation sollte jeden Schritt mit Status markieren:
-
-- `leer`
-- `unvollständig`
-- `gültig`
-- `Warnung`
-- `Fehler`
 
 ## 1. Übersicht
 
@@ -88,42 +67,41 @@ Anzeigen:
 
 Aktionen:
 
-- weiter zum nächsten offenen Schritt
+- zum nächsten offenen Schritt wechseln
 - Entwurf speichern
-- Paket erstellen und `deer.zip` herunterladen, wenn alles gültig ist
+- `deer.zip` erstellen und herunterladen, wenn der Preflight gültig ist
 
 ## 2. Rahmen
 
-Zweck: Allgemeine Sitzungsdaten, die der Raum braucht.
+Zweck: Allgemeine Sitzungsdaten erfassen.
 
 Pflichtfelder:
 
 | UI-Feld | Interne Bedeutung | Validierung |
 |---|---|---|
 | Raumtitel | `metadata.title` | nicht leer |
-| Sprache | `metadata.locale` | V0 default: `de-DE`; weitere Sprachen später |
+| Sprache | `metadata.locale` | V0-Standard: `de-DE` |
 | Zielgruppe | `session.targetAudience` | nicht leer |
-| Vorwissen | `session.priorKnowledge` | darf kurz sein, aber nicht leer |
+| Vorwissen | `session.priorKnowledge` | nicht leer |
 | Spielerzahl min/max | `session.playerCount` | `1 <= min <= max` |
 | Zeitlimit | `session.time.limitMinutes` | positive Zahl |
 | Zeitmodus | `session.time.limitMode` | `hard` oder `soft` |
 
-Nicht sichtbar oder fest:
+Fest für V0:
 
-- Theme: V0 immer Standard-Theme.
-- Levelanzahl: V0 immer ein Level.
-- Kooperationsmodus: V0 immer kooperativ.
+- Theme: Standard-Theme.
+- Levelanzahl: ein Level.
+- Kooperationsmodus: kooperativ.
 
 Zeitmodus:
 
 - `hard`: Nach Ablauf endet der Raum.
-- `soft`: Nach Ablauf darf weitergespielt werden; Hinweise oder Unterstützung
-  dürfen stärker werden.
+- `soft`: Nach Ablauf bleibt der Raum spielbar; Hinweise oder Unterstützung
+  können stärker werden.
 
 ## 3. Szenario
 
-Zweck: Story-Rahmen, damit der Raum nicht wie eine Vorlesungsfolie im Spiel
-wirkt.
+Zweck: Story-Rahmen für den Raum erfassen.
 
 Pflichtfelder:
 
@@ -131,7 +109,7 @@ Pflichtfelder:
 |---|---|---|
 | Rolle der Spielenden | `scenario.playerRole` | nicht leer |
 | Ausgangslage | `scenario.premise` | kurzer Fließtext |
-| Mission | `scenario.mission` | klares Ziel |
+| Mission | `scenario.mission` | klares Spielziel |
 | Intro-Text | `scenario.introText` | nicht leer |
 | Erfolgstext | `scenario.successText` | nicht leer |
 | Fehlschlagtext | `scenario.failureText` | nicht leer |
@@ -139,24 +117,24 @@ Pflichtfelder:
 Optionale Felder:
 
 - ein bis drei Lore-Texte
-- optionales Lore-Bild
-- optionales Intro-/Ambient-Audio
+- Lore-Bild
+- Intro-/Ambient-Audio
 
 Client-Warnungen:
 
 - Text sehr lang
-- Mission ist unklar formuliert
-- Intro beschreibt nur Fachinhalt, aber keine Spielsituation
+- Mission unklar
+- Intro beschreibt Fachinhalt ohne Spielsituation
 
 ## 4. Raum & Oberflächen
 
 Zweck: Sichtbar machen, welche Interaktionsorte aus den gewählten Bausteinen
-entstehen. Lehrende sollen keine technische Slot-Struktur vorab planen.
+entstehen.
 
 V0 startet nicht mit vorausgewählten Oberflächen. Oberflächen werden aus den
 gewählten Rätselbausteinen abgeleitet. Wenn Lehrende z. B. ein
 Computer-Login-Rätsel anlegen, erzeugt die UI daraus einen benötigten Computer
-und fragt nur noch die fachlich sichtbaren Eigenschaften ab.
+oder bietet einen vorhandenen kompatiblen Computer zur Auswahl an.
 
 Mögliche abgeleitete Oberflächen:
 
@@ -182,26 +160,26 @@ Pflichtangaben entstehen aus den gewählten Rätseln:
 
 Lehrende wählen primär Bausteine wie "Computer-Login", "Keypad" oder
 "Control Panel". Die UI leitet daraus die benötigten Oberflächen ab und zeigt
-sie zur Kontrolle an. Wenn eine Eingabe wie Passwort oder Code benötigt wird,
-kann die UI anbieten, den Wert automatisch vorzuschlagen oder manuell
-festzulegen.
+sie zur Kontrolle an. Werte wie Passwort oder Code können vorgeschlagen oder
+manuell festgelegt werden.
 
 Intern schreibt die UI die abgeleiteten Oberflächen in `surfaces`. Die
 fachliche Auswahl "Labor-PC" wird im JSON z. B. zu einer `surfaceId` wie
-`s_main_computer`. Lehrende müssen diese IDs nicht sehen.
+`s_main_computer`. Lehrende sehen diese IDs nur, wenn die UI dafür einen
+technischen Diagnosebereich anbietet.
 
 ## 5. Rätselablauf
 
 Zweck: Festlegen, welche Rätsel in welcher Reihenfolge gelöst werden müssen.
 
-Empfohlenes UI-Modell:
+Fachliches Modell:
 
 - strukturierte Ablauf-Liste mit optionalen Parallelgruppen
-- jedes Rätsel als Karte
-- Abhängigkeiten als "danach freigeschaltet"
+- jede Rätselinstanz als einzelnes bearbeitbares Element
+- Abhängigkeiten als fachliche Freischaltungen
 - keine sichtbaren Token-Namen für Lehrende
-- ein Canvas kann später eine alternative Visualisierung sein, sollte aber
-  nicht die erste Bedienlogik erzwingen
+- freie Darstellung, solange eine eindeutige Reihenfolge mit Parallelgruppen
+  ableitbar bleibt
 
 Pflichtangaben pro Knoten:
 
@@ -210,19 +188,17 @@ Pflichtangaben pro Knoten:
 | Rätselname | `riddle.title` | eindeutig genug |
 | Baustein-Typ | `riddle.type` | V0-Typ |
 | Kurzaufgabe | `playerFacingTask` | nicht leer |
-| Vorgänger | `requiresTokens` indirekt | darf keinen Zyklus erzeugen |
-| Ergebnis/Freischaltung | `producesTokens` indirekt | muss zu späterem Schritt passen |
+| Vorgänger | `requiresTokens` indirekt | kein Zyklus |
+| Ergebnis/Freischaltung | `producesTokens` indirekt | passt zu späterem Schritt |
 
 V0-Regeln:
 
-- Alle Progressionsrätsel müssen auf einem durchspielbaren Pfad liegen.
-- Keine optionalen Rätsel.
-- Branches dürfen Parallelität ausdrücken, aber keine Rätsel überspringen.
-- Der Wizard zeigt Fehler sofort im Graphen.
-- Der Editor verhindert oder markiert Zyklen, unerreichbare Knoten und
-  Abhängigkeiten, die erst nach dem benötigten Rätsel verfügbar werden.
-- Frei editierbar bedeutet in V0 nicht beliebig: Der Graph darf kreativ
-  angeordnet werden, bleibt aber durch Validierungsregeln eingeschränkt.
+- Alle Progressionsrätsel liegen auf einem durchspielbaren Pfad.
+- V0 erzeugt keine optionalen Rätselpfade.
+- Parallelgruppen drücken Parallelität aus, ohne Progressionsrätsel zu
+  überspringen.
+- Der Editor markiert Zyklen, unerreichbare Knoten und Abhängigkeiten, die erst
+  nach dem benötigten Rätsel verfügbar werden.
 
 ## 6. Rätsel Bearbeiten
 
@@ -271,7 +247,7 @@ Pflichtfelder:
 - je Feld: Label, erwarteter Wert, geheim ja/nein
 - Erfolg: Computer-Tabs freischalten
 
-V0-Default für The Last Hour:
+The-Last-Hour-nahe Vorgabe:
 
 - Feld 1: E-Mail
 - Feld 2: Passwort
@@ -291,7 +267,7 @@ Pflichtfelder:
 V0-Entscheidung:
 
 - bevorzugt als Computer-Tab
-- einfacher Dialog nur als technischer Fallback
+- einfacher Dialog als technischer Fallback
 
 ### 6.5 Decoding-Eingabe / `input.decoded_text`
 
@@ -315,7 +291,7 @@ Pflichtfelder:
 
 Optionale Felder:
 
-- falsche Eingabe Feedback
+- Feedback bei falscher Eingabe
 - Ziffernanzahl anzeigen ja/nein
 
 ### 6.7 USB Verwenden / `item_use`
@@ -325,11 +301,11 @@ Pflichtfelder:
 - Computer-Oberfläche
 - Zielobjekt, meist PC
 - Liste verfügbarer USB-Sticks
-- welcher Stick korrekt ist
+- korrekter Stick
 - Verhalten bei falschem Stick
 - Erfolg: USB-Laufwerk oder Control-Panel-Zugang freischalten
 
-The-Last-Hour-Default:
+The-Last-Hour-nahe Vorgabe:
 
 - mehrere farbige USB-Sticks
 - blauer USB ist korrekt
@@ -375,47 +351,42 @@ V0 nutzt das vorhandene Puzzle-/Item-System.
 
 ## 7. Inhalte & Assets
 
-Zweck: Alle Texte, Bilder und Audio-Dateien an einer Stelle verwalten.
+Zweck: Texte, Bilder und Audio-Dateien an einer Stelle verwalten.
 
 Pflichtbereiche:
 
 | Bereich | Pflicht, wenn... |
 |---|---|
-| Texte | ein Rätsel Text/Lore/Ressource nutzt |
+| Texte | ein Rätsel Text, Lore oder Ressource nutzt |
 | Bilder | eine Ressource oder Assembly ein Bild nutzt |
-| Audio | nur wenn Audio in Szenario oder Feedback aktiviert ist |
+| Audio | Audio in Szenario oder Feedback aktiviert ist |
 | Hinweise | optional, aber pro Rätsel als leeres Array vorhanden |
 
 Hint-Freischaltung:
 
-- sofort verfügbar,
-- nach Zeit,
-- nach Fehlversuchen,
-- nachdem eine Information gelesen wurde,
-- nachdem eine Oberfläche/ein Ort besucht wurde,
-- nachdem ein Rätsel gelöst wurde.
+- sofort verfügbar
+- nach Zeit
+- nach Fehlversuchen
+- nachdem eine Information gelesen wurde
+- nachdem eine Oberfläche/ein Ort besucht wurde
+- nachdem ein Rätsel gelöst wurde
 
-Die UI sollte diese Bedingungen fachlich benennen. Petri-Net-Tokens bleiben
-interne Generator-/Runtime-Details.
+Die UI benennt diese Bedingungen fachlich. Petri-Net-Tokens bleiben interne
+Generator-/Runtime-Details.
 
-V0-erlaubt:
+V0-Eingaben:
 
 - Text direkt im Wizard
 - Bilder als Upload
 - Audio als Upload
 
-Nicht V0:
-
-- Themes
-- Tilesets
-- Sprites
-- UI-Skins
-- beliebige Office-/PDF-Dateien als Runtime-Dokumente
+Theme-, Tileset-, Sprite-, UI-Skin- und Office/PDF-Uploads sind keine
+Eingaben dieses V0-Flows.
 
 ## 8. Prüfen & Paket Erstellen
 
-Zweck: Lehrende sehen vor dem Erstellen des `deer.zip` eine klare, nicht-technische
-Checkliste.
+Zweck: Lehrende sehen vor dem Erstellen des `deer.zip` eine klare,
+nicht-technische Checkliste.
 
 Blockierende Fehler:
 
@@ -430,6 +401,7 @@ Blockierende Fehler:
 - Aktion passt nicht zur gewählten Oberfläche
 - Computer-Rätsel ohne Computer
 - Keypad-Rätsel ohne Keypad
+- verwendeter Baustein ist im aktuellen Generator-Slice nicht generierbar
 
 Warnungen:
 
@@ -442,18 +414,14 @@ Hauptaktion:
 
 - `Paket erstellen` / `deer.zip herunterladen`
 
-Der Button ist deaktiviert, solange blockierende Fehler existieren.
+Der Button ist deaktiviert, solange blockierende Fehler existieren. V0 enthält
+in diesem Schritt keine Live-Preview, keinen Neu-Generieren-Button, keinen
+Import bestehender `deer.zip`-Pakete und keinen Generator-Start.
 
-Nicht V0:
+## Bausteinkatalog Aus The Last Hour
 
-- Import eines bestehenden `deer.zip`,
-- Wiederöffnen eines heruntergeladenen Pakets als Wizard-Entwurf.
-
-## Lehrenden-Sicht Auf The Last Hour V0
-
-Der Wizard soll nicht automatisch eine The-Last-Hour-Vorlage anlegen. Diese
-Liste beschreibt nur, welche The-Last-Hour-nahen Bausteine in V0 verfügbar sein
-sollten, damit ein sinngemäßer Nachbau möglich ist:
+Diese Liste beschreibt die The-Last-Hour-nahen Bausteine, die in V0 verfügbar
+sein können. Sie ist keine vorausgewählte Raumstruktur.
 
 1. Strom einschalten
 2. Login-Hinweise finden
@@ -469,34 +437,6 @@ sollten, damit ein sinngemäßer Nachbau möglich ist:
 12. Bildfragmente zusammensetzen
 13. finale Tür öffnen
 
-Lehrende bauen den Raum selbst aus diesen Bausteinen zusammen. Die UI darf
-Vorschläge, Beispiele oder leere Baustein-Karten anbieten, aber keine fertige
-Raumstruktur vorauswählen.
-
-## Aktuelle Entscheidungen
-
-1. V0 startet leer. Es gibt keine vorausgewählte The-Last-Hour-Vorlage.
-2. V0 nutzt nur die aus The Last Hour ableitbaren Spiel-Elemente als
-   verfügbare Bausteine.
-3. Der Computer ist kein eigener Hauptschritt, sondern eine Surface, an die
-   Rätsel oder Informationen gebunden werden können.
-4. Lehrende wählen Oberflächen und Bausteine aus. Werte wie Passwort oder Code
-   können automatisch vorgeschlagen oder manuell angegeben werden.
-5. Die sichtbare Abschlussaktion in V0 ist `Paket erstellen`. Die `deer.json`
-   ist dabei internes Authoring-Modell und Generator-Eingabe, nicht das
-   sichtbare Endprodukt für Lehrende.
-6. Blockierend sind nur game-breaking Fehler: Softlocks, unerreichbare Rätsel,
-   ungewollte Skips, fehlende Pflichtdaten und inkompatible Baustein-/Surface-
-   Kombinationen.
-7. V0 enthält keine spielbare Preview und keinen Neu-Generieren-Button.
-8. Eigenständige Decoy-Rätsel sind nicht Teil von V0. Falsche Optionen,
-   falsche Items oder Decoy-Ressourcen innerhalb eines Rätsels bleiben erlaubt.
-
-## Noch Zu Klären
-
-1. Welche Graph-Operationen sind in V0 erlaubt: Karte verschieben, Abhängigkeit
-   ziehen, Parallelgruppe erstellen, Reihenfolge per Drag-and-drop?
-2. Welche konkrete Komponente nutzt der UI-Prototyp für die strukturierte
-   Ablauf-Liste?
-3. Wie sichtbar werden Bausteine markiert, die im Konzept existieren, aber vom
-   aktuellen Generator-Slice noch nicht unterstützt werden?
+Lehrende bauen den Raum selbst aus diesen Bausteinen zusammen. Die UI kann
+Beispiele oder leere Baustein-Instanzen anbieten, ohne eine fertige
+Raumstruktur vorauszuwählen.
