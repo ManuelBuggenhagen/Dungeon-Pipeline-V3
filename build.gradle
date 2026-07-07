@@ -41,6 +41,7 @@ subprojects {
 allprojects {
     apply plugin: 'java'
     apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
 
     java {
         toolchain {
@@ -152,6 +153,19 @@ allprojects {
     tasks.withType(JavaCompile).configureEach {
         dependsOn tasks.named('generateInternalAssetsList')
     }
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+            html.required = true
+            // Hier passen wir den Pfad an den Standard eures Python-Skripts an
+            xml.outputLocation = file("${buildDir}/JacocoReports/test/jacocoTestReport.xml")
+            html.outputLocation = file("${buildDir}/JacocoReports/test/html")
+        }
+    }
+
+
+
 }
 
 tasks.named('clean') {
