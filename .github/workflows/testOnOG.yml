@@ -1,4 +1,4 @@
-name: Test with Code coverage
+name: Test with Code coverage for baseline
 on:
     pull_request:
     workflow_dispatch:
