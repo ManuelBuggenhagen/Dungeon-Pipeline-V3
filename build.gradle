@@ -41,6 +41,16 @@ subprojects {
 allprojects {
     apply plugin: 'java'
     apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+            html.required = true
+            xml.outputLocation = file("${buildDir}/JacocoReports/test/jacocoTestReport.xml")
+            html.outputLocation = file("${buildDir}/JacocoReports/test/html")
+        }
+    }
 
     java {
         toolchain {
